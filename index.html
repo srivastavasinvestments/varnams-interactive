@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>VARNAMS INTERACTIVE — The Sovereign Era of Gaming</title>
+  <meta name="description" content="VARNAMS Interactive is forging next-generation 3D physics sieges, psychological dilemma engines, and living tactical strategy games.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Sovereign Stylesheet & 3D Logo Favicon -->
+  <link rel="stylesheet" href="css/portal.css">
+  <link rel="icon" type="image/png" href="assets/varnams-logo-256.png">
+</head>
+<body>
+
+  <!-- Ambient Dynamic Canvas Background -->
+  <canvas id="ambient-canvas"></canvas>
+
+  <!-- Sovereign Navigation Header -->
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="#" class="brand-logo" title="VARNAMS Interactive">
+        <img src="assets/varnams-logo-512.png" alt="VARNAMS Interactive 3D Logo" class="brand-crest-img">
+        <div class="brand-text">
+          <span class="brand-title">VARNAMS</span>
+          <span class="brand-sub">INTERACTIVE • STUDIO</span>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#arena" class="nav-link">Visitor Arena</a></li>
+        <li><a href="#vision" class="nav-link">Studio Vision</a></li>
+        <li><a href="#tech" class="nav-link">Sovereign Tech</a></li>
+        <li><a href="#schedule" class="nav-link">Roadmap</a></li>
+        <li><a href="#vip" class="nav-link">VIP Council</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button id="sound-toggle-btn" class="btn-icon" title="Toggle Sound FX" aria-label="Toggle Sound">🔊</button>
+        <button id="theme-toggle-btn" class="btn-icon" title="Toggle Theme" aria-label="Toggle Theme">☀️</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section & Launch Countdown -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="royal-pill">
+        <span class="pulse-crown">👑</span>
+        <span>THE SOVEREIGN ERA OF GAMING • CONFIDENTIAL STEALTH PHASE</span>
+      </div>
+
+      <h1 class="hero-title">
+        FORGING THE NEXT<br>
+        <span class="text-gold-gradient">GAMING DYNASTY.</span>
+      </h1>
+
+      <p class="hero-desc">
+        Welcome to <strong>VARNAMS Interactive</strong>. We are architecting next-generation 3D physics destruction, psychological scenario engines, and living battlefield strategy experiences. Our production pipeline is under strict confidential development ahead of our global launch.
+      </p>
+
+      <!-- Global Countdown Timer -->
+      <div class="countdown-container">
+        <div class="countdown-header">
+          <div class="countdown-tag">
+            <span>⏳</span> GLOBAL LAUNCH COUNTDOWN
+          </div>
+          <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--hyper-cyan);">
+            PHASE 1 DEPLOYMENT
+          </span>
+        </div>
+
+        <div class="countdown-grid">
+          <div class="countdown-unit">
+            <div id="days-val" class="unit-value">48</div>
+            <div class="unit-label">Days</div>
+          </div>
+          <div class="countdown-unit">
+            <div id="hours-val" class="unit-value">18</div>
+            <div class="unit-label">Hours</div>
+          </div>
+          <div class="countdown-unit">
+            <div id="mins-val" class="unit-value">00</div>
+            <div class="unit-label">Minutes</div>
+          </div>
+          <div class="countdown-unit">
+            <div id="secs-val" class="unit-value">00</div>
+            <div class="unit-label">Seconds</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-cta-group">
+        <a href="#arena" class="btn btn-gold">
+          <span>⚡</span> Play Visitor Demolition
+        </a>
+        <a href="#vip" class="btn btn-outline">
+          <span>👑</span> Request VIP Beta Clearance
+        </a>
+      </div>
+    </div>
+
+    <!-- Mini-Game Arena: VARNAMS Royal Blitz -->
+    <div class="hero-minigame-wrap" id="arena">
+      <div class="minigame-box">
+        <div class="minigame-header">
+          <div class="minigame-title-group">
+            <h3><span>⚡</span> ROYAL BLITZ: CORE STRIKE</h3>
+            <p>Interactive Physics Demolition • Test Our Destruction Engine</p>
+          </div>
+
+          <div class="minigame-hud">
+            <div>SCORE: <span id="hud-score-val" class="hud-score">0</span></div>
+            <div>HIGH: <span id="hud-high-val" class="hud-high">0</span></div>
+            <div>COMBO: <span id="hud-combo-val" class="hud-combo">x1</span></div>
+          </div>
+        </div>
+
+        <div class="canvas-holder">
+          <canvas id="minigame-canvas"></canvas>
+
+          <!-- Start / Game Over Overlay -->
+          <div id="minigame-overlay" class="minigame-overlay">
+            <div class="overlay-emblem">👑</div>
+            <h4 id="overlay-title" class="overlay-title">ROYAL BLITZ ARENA</h4>
+            <p id="overlay-desc" class="overlay-desc">
+              Aim your siege artillery, bounce kinetic orbs, and shatter enemy defense barriers. Score 300+ to unlock VIP Beta Tester Clearance!
+            </p>
+            <button id="overlay-start-btn" class="btn btn-gold">
+              <span>▶</span> Fire Cannon
+            </button>
+          </div>
+        </div>
+
+        <div class="minigame-controls-bar">
+          <span>🎯 Drag / Mouse to Aim • Click / Release to Launch</span>
+          <span>💥 Bounce for Combo Multipliers</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Confidential Studio Status Banner -->
+  <section class="stealth-banner-section">
+    <div class="stealth-banner">
+      <div class="stealth-badge">
+        <span>🔒</span> CONFIDENTIAL EMBARGO ACTIVE
+      </div>
+      <div class="stealth-content">
+        <h3>Proprietary Games Under Stealth Embargo</h3>
+        <p>
+          To protect our proprietary mechanics, bespoke 3D physics solvers, and competitive launch timing, <strong>VARNAMS Interactive does not showcase games publicly prior to official global launch</strong>. All playable titles and media assets remain under confidential security clearance.
+        </p>
+        <div class="stealth-features">
+          <div class="stealth-item">
+            <span class="stealth-icon">🛡️</span>
+            <div>
+              <strong>Zero Leaks Policy</strong>
+              <p>Confidential builds restricted to vetted QA testers.</p>
+            </div>
+          </div>
+          <div class="stealth-item">
+            <span class="stealth-icon">⚡</span>
+            <div>
+              <strong>Proprietary Physics</strong>
+              <p>Custom 60–120 FPS rigid-body solvers in confidential trials.</p>
+            </div>
+          </div>
+          <div class="stealth-item">
+            <span class="stealth-icon">👑</span>
+            <div>
+              <strong>VIP Founder Priority</strong>
+              <p>Early clearance invites dispatched exclusively via VIP Council.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Studio Vision & Pillars -->
+  <section class="vision-section" id="vision">
+    <div class="section-header">
+      <span class="section-tag">Studio Philosophy</span>
+      <h2 class="section-title">The Sovereign Vision</h2>
+      <p class="section-subtitle">Crafting timeless digital masterworks with kinetic depth and emotional weight.</p>
+    </div>
+
+    <div class="vision-grid">
+      <div class="vision-card">
+        <div class="vision-icon">💎</div>
+        <h3>Uncompromising Craftsmanship</h3>
+        <p>We reject cookie-cutter templates. Every system, interface token, and physical simulation is built from the ground up to evoke mastery and sovereign quality.</p>
+      </div>
+
+      <div class="vision-card">
+        <div class="vision-icon">💥</div>
+        <h3>Visceral Physics Feedback</h3>
+        <p>Every impact, destruction event, and interaction resonates through satisfying kinetic energy transfer, procedural particles, and synchronized audio synthesis.</p>
+      </div>
+
+      <div class="vision-card">
+        <div class="vision-icon">🧠</div>
+        <h3>Intellectual Depth</h3>
+        <p>From complex moral dilemmas to grandmaster tactical chess warfare, our titles challenge the mind and reward player ingenuity over mindless repetition.</p>
+      </div>
+
+      <div class="vision-card">
+        <div class="vision-icon">🌍</div>
+        <h3>Global Seamless Reach</h3>
+        <p>Designed for frictionless performance across mobile, desktop, and web platforms with zero compromise on visual fidelity or frame rates.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Studio Architecture & Sovereign Tech -->
+  <section class="tech-section" id="tech">
+    <div class="section-header">
+      <span class="section-tag">Engineering Supremacy</span>
+      <h2 class="section-title">The Sovereign Gaming Architecture</h2>
+      <p class="section-subtitle">Engineered to set new visual benchmarks across web, iOS, and Android platforms.</p>
+    </div>
+
+    <div class="vision-grid">
+      <div class="vision-card">
+        <div class="vision-icon">🏰</div>
+        <h3>Rigid-Body Kinetic Physics</h3>
+        <p>Custom demolition pipelines simulating thousands of structural stress fractures, projectile impacts, and kinetic debris at locked 60–120 FPS.</p>
+      </div>
+
+      <div class="vision-card">
+        <div class="vision-icon">⚡</div>
+        <h3>High-Fidelity Shaders</h3>
+        <p>Advanced Universal Render Pipeline (URP) shaders, screen-space ambient occlusion, and dynamic lighting optimized for Apple Metal & Android Vulkan APIs.</p>
+      </div>
+
+      <div class="vision-card">
+        <div class="vision-icon">🤖</div>
+        <h3>Adaptive Neural AI</h3>
+        <p>Dynamic decision evaluation engines and neural adversarial agents providing unpredictable, masterclass-level competitive experiences.</p>
+      </div>
+
+      <div class="vision-card">
+        <div class="vision-icon">👑</div>
+        <h3>Instant Cross-Platform Sync</h3>
+        <p>Seamless transition between browser instant-play WebGL prototypes and high-performance native App Store and Google Play mobile builds.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Roadmap / Launch Trajectory -->
+  <section class="schedule-section" id="schedule">
+    <div class="section-header">
+      <span class="section-tag">Release Trajectory</span>
+      <h2 class="section-title">Strategic Launch Roadmap</h2>
+      <p class="section-subtitle">Our phased path from stealth production toward global worldwide release.</p>
+    </div>
+
+    <div class="schedule-timeline">
+      <div class="schedule-card">
+        <div class="schedule-phase">Phase I • Active (Current)</div>
+        <h4>Confidential Benchmark Testing</h4>
+        <p>Stress-testing internal physics solvers, training adversarial neural engines, and polishing core loops behind confidential embargo.</p>
+      </div>
+
+      <div class="schedule-card">
+        <div class="schedule-phase">Phase II • Upcoming</div>
+        <h4>VIP Council Closed Beta</h4>
+        <p>Exclusive TestFlight & Android APK access for pre-registered VIP Council members and game industry tastemakers.</p>
+      </div>
+
+      <div class="schedule-card">
+        <div class="schedule-phase">Phase III • Target Q4 2026</div>
+        <h4>Global Public Reveal</h4>
+        <p>Worldwide public unveiling of our premier launch titles with live trailers, playable showcases, and app store rollouts.</p>
+      </div>
+
+      <div class="schedule-card">
+        <div class="schedule-phase">Phase IV • 2027</div>
+        <h4>Cross-Platform Dynasty</h4>
+        <p>Expansion to global tournament ladders, synchronized cloud progression, and live competitive seasons.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIP Council Pre-Registration Form -->
+  <section class="vip-section" id="vip">
+    <h3>Join the VARNAMS Sovereign Council</h3>
+    <p>
+      While our portfolio remains confidential, priority access to closed beta builds and early founder announcements is reserved for the VIP Council.
+    </p>
+
+    <form class="vip-form" id="vip-form">
+      <input type="email" id="vip-email" class="vip-input" placeholder="Enter your email address..." required>
+      <button type="submit" class="btn btn-gold">
+        <span>👑</span> Join VIP Council
+      </button>
+    </form>
+  </section>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="brand-logo">
+          <img src="assets/varnams-logo-512.png" alt="VARNAMS Interactive 3D Logo" class="brand-crest-img">
+          <div class="brand-text">
+            <span class="brand-title">VARNAMS</span>
+            <span class="brand-sub">INTERACTIVE</span>
+          </div>
+        </div>
+        <p>Pioneering the sovereign era of interactive digital entertainment. Independent game development focused on kinetic physics, living battlefields, and psychological scenario engines.</p>
+        <div style="margin-top: 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--royal-gold);">
+          ● Confidential Studio Embargo Active
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h5>Studio</h5>
+        <ul class="footer-links">
+          <li><a href="#vision">Studio Philosophy</a></li>
+          <li><a href="#arena">Visitor Mini-Game</a></li>
+          <li><a href="#schedule">Launch Roadmap</a></li>
+          <li><a href="#vip">VIP Council Registration</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Sovereign Tech</h5>
+        <ul class="footer-links">
+          <li><a href="#tech">Kinetic Rigid Physics</a></li>
+          <li><a href="#tech">Unity 6 URP Shaders</a></li>
+          <li><a href="#tech">Adaptive Neural AI</a></li>
+          <li><a href="#tech">Web Audio Procedural FX</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h5>Target Platforms</h5>
+        <ul class="footer-links">
+          <li><a href="#">Apple iOS (Metal API)</a></li>
+          <li><a href="#">Google Android (Vulkan API)</a></li>
+          <li><a href="#">WebGL 2.0 Instant Engine</a></li>
+          <li><a href="#">Capacitor 6 Hybrid</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 VARNAMS Interactive. All rights reserved.</div>
+      <div>Designed with High-Performance HTML5, Sovereign CSS3 & ES6 Canvas.</div>
+    </div>
+  </footer>
+
+  <!-- Main Script -->
+  <script src="js/portal.js"></script>
+</body>
+</html>

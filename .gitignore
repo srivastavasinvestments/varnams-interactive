@@ -1,0 +1,28 @@
+# Confidential Game Projects (Stealth Embargo)
+aero-haven/
+castle-buster/
+decision-arcade/
+just-desserts/
+mob-controller/
+revenge/
+royal-smash/
+secretquest/
+truth-and-dare/
+adda-90s/
+
+# Internal Game Design & Strategy Docs (Stealth Embargo)
+GAME_*.md
+Game_Launch_Blueprint.md
+.venv/
+.restore_points/
+ocr.swift
+vision_ocr.swift
+ocr.py
+logo-view.html
+*.jpeg
+
+# System & Editor Artifacts
+.DS_Store
+*.log
+.system_generated/
+scratch/

@@ -1,0 +1,227 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#111625"/>
+      <stop offset="50%" stop-color="#080a12"/>
+      <stop offset="100%" stop-color="#030407"/>
+    </radialGradient>
+
+    <!-- Prismatic Gem Facet Gradients -->
+    <!-- Gold / Amber Spectrum -->
+    <linearGradient id="goldFacet1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="goldFacet2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="70%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#78350f"/>
+    </linearGradient>
+    <linearGradient id="amberFacet" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fb923c"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+
+    <!-- Cyan / Sapphire Spectrum -->
+    <linearGradient id="cyanFacet1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a5f3fc"/>
+      <stop offset="50%" stop-color="#00f2fe"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="cyanFacet2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="70%" stop-color="#0369a1"/>
+      <stop offset="100%" stop-color="#0c4a6e"/>
+    </linearGradient>
+    <linearGradient id="sapphireFacet" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+
+    <!-- Magenta / Violet Core Spectrum -->
+    <linearGradient id="magentaFacet1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="50%" stop-color="#d946ef"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+    <linearGradient id="violetFacet2" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#6b21a8"/>
+    </linearGradient>
+
+    <!-- Eye Gradients -->
+    <radialGradient id="eyeIrisGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#00f2fe"/>
+      <stop offset="60%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
+    <linearGradient id="eyeRingGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <radialGradient id="celestialCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="40%" stop-color="#fde047"/>
+      <stop offset="80%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+
+    <!-- Filters for Glows -->
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur1"/>
+      <feGaussianBlur stdDeviation="20" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="eyeGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="subtleDrop" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="800" height="800" fill="url(#bgGlow)"/>
+
+  <!-- Subtle Sacred Geometry Grid Lines in Background -->
+  <g opacity="0.15" stroke="#f59e0b" stroke-width="0.8" fill="none">
+    <circle cx="400" cy="380" r="320"/>
+    <circle cx="400" cy="380" r="260" stroke-dasharray="4 8"/>
+    <circle cx="400" cy="270" r="140"/>
+    <circle cx="400" cy="270" r="90" stroke-dasharray="2 6"/>
+    <!-- Sacred Triangle -->
+    <polygon points="400,110 630,510 170,510"/>
+    <polygon points="400,140 600,490 200,490" stroke-dasharray="6 6"/>
+  </g>
+
+  <!-- Radiating God Rays from The Eye -->
+  <g opacity="0.35" filter="url(#eyeGlow)">
+    <line x1="400" y1="270" x2="400" y2="80" stroke="#fbbf24" stroke-width="2"/>
+    <line x1="400" y1="270" x2="310" y2="100" stroke="#00f2fe" stroke-width="1.5"/>
+    <line x1="400" y1="270" x2="490" y2="100" stroke="#f59e0b" stroke-width="1.5"/>
+    <line x1="400" y1="270" x2="230" y2="150" stroke="#38bdf8" stroke-width="1.2"/>
+    <line x1="400" y1="270" x2="570" y2="150" stroke="#f59e0b" stroke-width="1.2"/>
+    <line x1="400" y1="270" x2="160" y2="230" stroke="#00f2fe" stroke-width="1"/>
+    <line x1="400" y1="270" x2="640" y2="230" stroke="#fbbf24" stroke-width="1"/>
+    <line x1="400" y1="270" x2="180" y2="330" stroke="#8b5cf6" stroke-width="1"/>
+    <line x1="400" y1="270" x2="620" y2="330" stroke="#ec4899" stroke-width="1"/>
+  </g>
+
+  <!-- =====================================================================
+       PRISMATIC FACETED 'V' EMBLEM
+       ===================================================================== -->
+  <g filter="url(#subtleDrop)">
+    <!-- LEFT WING / ARM (GOLD & AMBER SPECTRUM) -->
+    <!-- Outer Upper Gold Facet -->
+    <polygon points="400,580 340,430 210,260 270,250" fill="url(#goldFacet1)" stroke="#fef08a" stroke-width="0.8"/>
+    <!-- Outer Lower Amber Facet -->
+    <polygon points="400,580 320,490 270,250 330,300" fill="url(#amberFacet)" stroke="#f59e0b" stroke-width="0.8"/>
+    <!-- Inner Main Gold Blade -->
+    <polygon points="400,580 340,430 330,300 375,340" fill="url(#goldFacet2)" stroke="#fef08a" stroke-width="0.8"/>
+    <!-- Left Top Bevel Tip -->
+    <polygon points="210,260 270,250 250,225" fill="#fef08a" stroke="#fff" stroke-width="0.5"/>
+    <polygon points="210,260 250,225 215,240" fill="#b45309"/>
+
+    <!-- RIGHT WING / ARM (CYAN & SAPPHIRE SPECTRUM) -->
+    <!-- Outer Upper Cyan Facet -->
+    <polygon points="400,580 460,430 590,260 530,250" fill="url(#cyanFacet1)" stroke="#a5f3fc" stroke-width="0.8"/>
+    <!-- Outer Lower Sapphire Facet -->
+    <polygon points="400,580 480,490 530,250 470,300" fill="url(#sapphireFacet)" stroke="#00f2fe" stroke-width="0.8"/>
+    <!-- Inner Main Cyan Blade -->
+    <polygon points="400,580 460,430 470,300 425,340" fill="url(#cyanFacet2)" stroke="#a5f3fc" stroke-width="0.8"/>
+    <!-- Right Top Bevel Tip -->
+    <polygon points="590,260 530,250 550,225" fill="#a5f3fc" stroke="#fff" stroke-width="0.5"/>
+    <polygon points="590,260 550,225 585,240" fill="#0369a1"/>
+
+    <!-- CENTER APEX / HEART (MAGENTA, VIOLET & PRISMATIC REFRACTION) -->
+    <!-- Center Keel Diamond -->
+    <polygon points="400,580 375,340 400,310 425,340" fill="url(#magentaFacet1)" stroke="#f472b6" stroke-width="1"/>
+    <!-- Inner Gem Facets -->
+    <polygon points="400,580 385,460 400,430 415,460" fill="url(#violetFacet2)" stroke="#c084fc" stroke-width="0.8"/>
+    <!-- Bottom Sharp Terminal Point -->
+    <polygon points="400,580 392,600 400,610 408,600" fill="#f59e0b" stroke="#fff" stroke-width="0.5"/>
+  </g>
+
+  <!-- =====================================================================
+       MYSTERIOUS SOCIETY EYE SYMBOL (ALL-SEEING PROVIDENCE / SECRET ORDER)
+       ===================================================================== -->
+  <g transform="translate(400, 265)">
+    <!-- Arcane Circular Enclosure -->
+    <circle cx="0" cy="0" r="78" fill="none" stroke="url(#eyeRingGold)" stroke-width="2.5" filter="url(#eyeGlow)"/>
+    <circle cx="0" cy="0" r="70" fill="none" stroke="#00f2fe" stroke-width="1" stroke-dasharray="3 5" opacity="0.8"/>
+    <circle cx="0" cy="0" r="86" fill="none" stroke="#8b5cf6" stroke-width="0.8" opacity="0.6"/>
+
+    <!-- Mystic Triangle Framing the Eye -->
+    <polygon points="0,-95 72,38 -72,38" fill="rgba(8, 10, 18, 0.7)" stroke="url(#eyeRingGold)" stroke-width="2.5" filter="url(#subtleDrop)"/>
+    <polygon points="0,-82 60,30 -60,30" fill="none" stroke="#00f2fe" stroke-width="1" opacity="0.75"/>
+
+    <!-- Eye Sclera / Almond Shape -->
+    <!-- Upper Eyelid Curve -->
+    <path d="M -54,0 C -32,-36 32,-36 54,0 C 32,36 -32,36 -54,0 Z" 
+          fill="#070a14" 
+          stroke="url(#eyeRingGold)" 
+          stroke-width="3" 
+          filter="url(#subtleDrop)"/>
+
+    <!-- Inner Eye Glow -->
+    <path d="M -48,0 C -28,-30 28,-30 48,0 C 28,30 -28,30 -48,0 Z" 
+          fill="rgba(0, 242, 254, 0.12)"/>
+
+    <!-- Iris (Cosmic Prismatic Nebula) -->
+    <circle cx="0" cy="0" r="24" fill="url(#eyeIrisGlow)"/>
+    <circle cx="0" cy="0" r="24" fill="none" stroke="#00f2fe" stroke-width="1.5" opacity="0.9"/>
+    <circle cx="0" cy="0" r="18" fill="none" stroke="#f59e0b" stroke-width="0.8" stroke-dasharray="2 3"/>
+
+    <!-- Pupil (Deep Abyss with Celestial Singularity) -->
+    <circle cx="0" cy="0" r="10" fill="#030408"/>
+    <circle cx="0" cy="0" r="5" fill="#ffffff" filter="url(#eyeGlow)"/>
+
+    <!-- Celestial Sparkles / Catchlights -->
+    <circle cx="-5" cy="-6" r="2.5" fill="#ffffff"/>
+    <circle cx="4" cy="4" r="1.5" fill="#fde047"/>
+
+    <!-- Glowing Mystic Eyelashes / Energy Rays -->
+    <path d="M 0,-40 L 0,-52 M -24,-34 L -32,-46 M 24,-34 L 32,-46 M -44,-16 L -56,-24 M 44,-16 L 56,-24" 
+          stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M 0,40 L 0,50 M -24,34 L -32,44 M 24,34 L 32,44" 
+          stroke="#00f2fe" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- =====================================================================
+       TYPOGRAPHY: VARNAMS INTERACTIVE
+       ===================================================================== -->
+  <g text-anchor="middle" filter="url(#subtleDrop)">
+    <!-- Primary Brand Wordmark -->
+    <text x="400" y="695" 
+          font-family="'Space Grotesk', -apple-system, sans-serif" 
+          font-size="44" 
+          font-weight="900" 
+          letter-spacing="10" 
+          fill="url(#goldFacet1)">
+      VARNAMS
+    </text>
+
+    <!-- Subtitle / Industry -->
+    <text x="400" y="735" 
+          font-family="'JetBrains Mono', monospace" 
+          font-size="14" 
+          font-weight="700" 
+          letter-spacing="12" 
+          fill="#38bdf8" 
+          opacity="0.95">
+      INTERACTIVE
+    </text>
+  </g>
+</svg>
