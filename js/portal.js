@@ -88,6 +88,70 @@ class RoyalAudio {
     });
   }
 
+  playSlideWhistle() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx || this.ctx.state === 'suspended') return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(980, now + 0.35);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(now + 0.35);
+    } catch(e) {}
+  }
+
+  playRocketThrust() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx || this.ctx.state === 'suspended') return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.linearRampToValueAtTime(50, now + 0.7);
+      gain.gain.setValueAtTime(0.11, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(now + 0.7);
+    } catch(e) {}
+  }
+
+  playSpringBoing() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx || this.ctx.state === 'suspended') return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(650, now);
+      osc.frequency.exponentialRampToValueAtTime(280, now + 0.28);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(now + 0.28);
+    } catch(e) {}
+  }
+
+  playSqueak() {
+    this.playTone(720, 0.08, 'triangle', 0.06);
+  }
+
   toggle() {
     this.enabled = !this.enabled;
     localStorage.setItem('varnams_sound', this.enabled);
@@ -134,6 +198,142 @@ function initCountdown() {
 
   update();
   setInterval(update, 1000);
+}
+
+// 4. FUNNY CARTOON MISSILE LAUNCHPAD CONTROLLER
+function initFunnyMissileLaunchpad() {
+  const deck = document.getElementById('launchpad-deck');
+  const fireBtn = document.getElementById('btn-fire-missile');
+  const speechEl = document.getElementById('mascot-speech');
+  const mascotEl = document.getElementById('mascot-operator');
+  const missileEl = document.getElementById('wobbly-missile');
+  const smokeContainer = document.getElementById('launch-smoke-fx');
+
+  if (!deck || !fireBtn) return;
+
+  const funnyQuotes = [
+    "T-minus 48 days... or until someone hits that red button!",
+    "Warning: Missile fuel is 90% energy drinks & 10% adrenaline!",
+    "Wait, did anyone check if the fins are taped on tight?!",
+    "Don't press the red button! ...Okay fine, maybe just once!",
+    "Target coordinates locked: Straight into the stratosphere!",
+    "Houston, we don't have a problem, we have a PARTY!",
+    "I swear the blueprints were drawn in crayon!",
+    "Aiming for the Moon... hope I don't hit a satellite dish!",
+    "Safety inspection status: Passed with flying colors (mostly yellow)!",
+    "Hold onto your socks! The countdown is ticking!"
+  ];
+
+  const launchScreams = [
+    "WHOA HOLD ON TO YOUR PANTS!!",
+    "BLASTOOOOOFFFFF! BYE BYE MISSILE!",
+    "I DIDN'T DO IT! IT WAS LIKE THAT!",
+    "SEEEE YA IN ORBIT, SUCKEEEERS!",
+    "WHEEEEEEEEEEE! THAT TICKLES!"
+  ];
+
+  const reloadQuotes = [
+    "Phew! Fresh missile reloaded. Want another go?",
+    "That was AWESOME! Let's do it again!",
+    "BOING! Another Acme V-100 locked and loaded!",
+    "Still 48 days left... plenty of time for test launches!"
+  ];
+
+  let currentQuoteIdx = 0;
+  let isLaunching = false;
+
+  function cycleSpeech(text) {
+    if (!speechEl) return;
+    speechEl.style.animation = 'none';
+    speechEl.offsetHeight; // trigger reflow
+    speechEl.textContent = text || funnyQuotes[currentQuoteIdx % funnyQuotes.length];
+    speechEl.style.animation = 'bubblePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+  }
+
+  // Periodic funny quotes
+  setInterval(() => {
+    if (!isLaunching) {
+      currentQuoteIdx++;
+      cycleSpeech();
+    }
+  }, 7500);
+
+  // Click mascot to talk
+  if (mascotEl) {
+    mascotEl.addEventListener('click', () => {
+      if (isLaunching) return;
+      royalAudio.playSqueak();
+      currentQuoteIdx++;
+      cycleSpeech();
+    });
+  }
+
+  // Helper to spawn smoke puff particles
+  function spawnSmokePuff(xOffset = 0) {
+    if (!smokeContainer) return;
+    const puff = document.createElement('div');
+    puff.className = 'smoke-burst-puff';
+    const size = 18 + Math.random() * 24;
+    puff.style.width = `${size}px`;
+    puff.style.height = `${size}px`;
+    puff.style.left = `calc(50% + ${xOffset}px)`;
+    puff.style.bottom = '0px';
+    puff.style.setProperty('--tx', `${(Math.random() - 0.5) * 60}px`);
+    puff.style.setProperty('--ty', `-${40 + Math.random() * 45}px`);
+    smokeContainer.appendChild(puff);
+    setTimeout(() => puff.remove(), 950);
+  }
+
+  // Launch Sequence
+  function triggerLaunch() {
+    if (isLaunching) return;
+    isLaunching = true;
+    fireBtn.disabled = true;
+
+    // 1. Ignition & Violent Rattle Phase
+    deck.classList.add('is-preparing');
+    cycleSpeech(launchScreams[Math.floor(Math.random() * launchScreams.length)]);
+    royalAudio.playSlideWhistle();
+
+    // Spawn rapid smoke puffs
+    const smokeInterval = setInterval(() => {
+      spawnSmokePuff((Math.random() - 0.5) * 40);
+    }, 80);
+
+    setTimeout(() => {
+      // 2. Blastoff Phase!
+      clearInterval(smokeInterval);
+      deck.classList.remove('is-preparing');
+      deck.classList.add('is-flying');
+      royalAudio.playRocketThrust();
+      showToast('🚀 Acme V-100 launched into orbit!', '💥');
+
+      // Heavy smoke burst at launchpad
+      for (let i = 0; i < 8; i++) {
+        setTimeout(() => spawnSmokePuff((Math.random() - 0.5) * 60), i * 35);
+      }
+
+      // 3. Reload Phase
+      setTimeout(() => {
+        deck.classList.remove('is-flying');
+        deck.classList.add('is-reloading');
+        royalAudio.playSpringBoing();
+
+        setTimeout(() => {
+          deck.classList.remove('is-reloading');
+          isLaunching = false;
+          fireBtn.disabled = false;
+          cycleSpeech(reloadQuotes[Math.floor(Math.random() * reloadQuotes.length)]);
+        }, 950);
+      }, 1400);
+
+    }, 850);
+  }
+
+  fireBtn.addEventListener('click', triggerLaunch);
+  if (missileEl) {
+    missileEl.addEventListener('click', triggerLaunch);
+  }
 }
 
 // 6. VISITOR MINI-GAME: VARNAMS ROYAL BLITZ (CORE DEMOLITION)
@@ -598,6 +798,7 @@ function initAmbientCanvas() {
 document.addEventListener('DOMContentLoaded', () => {
   initAmbientCanvas();
   initCountdown();
+  initFunnyMissileLaunchpad();
 
   // Initialize Visitor Mini-Game
   const blitzGame = new RoyalBlitzGame('minigame-canvas');

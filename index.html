@@ -92,6 +92,187 @@
             <div class="unit-label">Seconds</div>
           </div>
         </div>
+
+        <!-- Funny Cartoon Missile Launchpad Station -->
+        <div class="launchpad-deck" id="launchpad-deck">
+          <div class="deck-top-bar">
+            <div class="deck-status">
+              <span class="status-blinker"></span>
+              <span class="status-title">COSMIC SILO • ACME V-100 MISSILE</span>
+            </div>
+            <button id="btn-fire-missile" class="btn-launch-fire" title="Test Fire Missile (Warning: Comic Chaos!)">
+              <span class="fire-icon">🚀</span>
+              <span class="fire-text">TEST LAUNCH!</span>
+            </button>
+          </div>
+
+          <div class="deck-stage">
+            <!-- Cartoon Mascot Operator: Captain Cosmo -->
+            <div class="mascot-wrapper" id="mascot-operator" title="Click me to talk!">
+              <div class="mascot-bubble" id="mascot-speech">
+                "T-minus 48 days... or until someone hits that red button!"
+              </div>
+              <svg class="mascot-svg" viewBox="0 0 140 170" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="helmetGlass" cx="35%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.9"/>
+                    <stop offset="50%" stop-color="#7DD3FC" stop-opacity="0.6"/>
+                    <stop offset="100%" stop-color="#0284C7" stop-opacity="0.85"/>
+                  </radialGradient>
+                  <linearGradient id="suitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#E2E8F0"/>
+                    <stop offset="50%" stop-color="#F8FAFC"/>
+                    <stop offset="100%" stop-color="#CBD5E1"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Oxygen Tanks on Back -->
+                <rect x="32" y="85" width="20" height="45" rx="8" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+                <rect x="58" y="85" width="20" height="45" rx="8" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+
+                <!-- Space Suit Body -->
+                <path d="M 35 95 C 28 115 30 145 42 152 L 70 152 C 82 145 84 115 77 95 Z" fill="url(#suitGrad)" stroke="#334155" stroke-width="2.5"/>
+
+                <!-- Suit Chest Control Panel -->
+                <rect x="46" y="112" width="20" height="14" rx="3" fill="#0F172A" stroke="#00F0FF" stroke-width="1.5"/>
+                <circle cx="51" cy="119" r="2" fill="#22C55E"/>
+                <circle cx="56" cy="119" r="2" fill="#EAB308"/>
+                <circle cx="61" cy="119" r="2" fill="#EF4444"/>
+
+                <!-- Boots -->
+                <path d="M 40 150 C 35 158 32 165 46 166 L 54 166 C 56 160 54 150 50 150 Z" fill="#334155" stroke="#1E293B" stroke-width="2"/>
+                <path d="M 62 150 C 58 160 56 166 68 166 L 76 166 C 80 158 77 150 72 150 Z" fill="#334155" stroke="#1E293B" stroke-width="2"/>
+
+                <!-- Giant Cartoon Astronaut Helmet -->
+                <circle cx="56" cy="55" r="42" fill="url(#suitGrad)" stroke="#334155" stroke-width="2.5"/>
+                <circle cx="56" cy="55" r="35" fill="url(#helmetGlass)" stroke="#0284C7" stroke-width="2"/>
+                <path d="M 28 88 Q 56 98 84 88" stroke="#F59E0B" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+                <!-- Antenna with Pulsing Light -->
+                <path d="M 56 13 L 56 2" stroke="#64748B" stroke-width="3" stroke-linecap="round"/>
+                <circle class="antenna-light" cx="56" cy="2" r="5" fill="#00F0FF" stroke="#0284C7" stroke-width="1.5"/>
+
+                <!-- Cartoon Eyes inside Helmet -->
+                <circle cx="46" cy="52" r="9" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+                <circle class="mascot-pupil left-pupil" cx="47" cy="52" r="4.5" fill="#0F172A"/>
+                <circle cx="49" cy="50" r="1.5" fill="#FFFFFF"/>
+
+                <circle cx="66" cy="52" r="9" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8"/>
+                <circle class="mascot-pupil right-pupil" cx="67" cy="52" r="4.5" fill="#0F172A"/>
+                <circle cx="69" cy="50" r="1.5" fill="#FFFFFF"/>
+
+                <!-- Cute Cheeks -->
+                <circle cx="39" cy="62" r="4.5" fill="#FB7185" opacity="0.6"/>
+                <circle cx="73" cy="62" r="4.5" fill="#FB7185" opacity="0.6"/>
+
+                <!-- Cheerful Smile -->
+                <path class="mascot-mouth" d="M 50 64 Q 56 72 62 64" stroke="#0F172A" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                <!-- Glass Reflection Highlight -->
+                <path d="M 32 38 C 40 28 52 24 64 24" stroke="#FFFFFF" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.75"/>
+
+                <!-- Comic Left Arm holding Detonator Box -->
+                <path d="M 36 100 C 24 110 20 125 32 135" stroke="#CBD5E1" stroke-width="8" stroke-linecap="round" fill="none"/>
+                <path class="mascot-arm-right" d="M 76 100 C 88 110 94 125 90 135" stroke="#CBD5E1" stroke-width="8" stroke-linecap="round" fill="none"/>
+
+                <!-- Comic Detonator Box / Red Switch -->
+                <g class="detonator-box" transform="translate(82, 120)">
+                  <rect x="0" y="0" width="34" height="24" rx="4" fill="#DC2626" stroke="#991B1B" stroke-width="2"/>
+                  <path d="M 2 8 L 8 2 M 10 12 L 18 4 M 18 16 L 26 8" stroke="#FBBF24" stroke-width="2"/>
+                  <path class="detonator-plunger" d="M 12 0 L 12 -8 M 6 -8 L 18 -8" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+                  <circle class="detonator-button" cx="24" cy="-3" r="5" fill="#EF4444" stroke="#991B1B" stroke-width="1.5"/>
+                  <text x="17" y="16" font-family="monospace" font-size="6" font-weight="900" fill="#FFF" text-anchor="middle">BOOM</text>
+                </g>
+                <path d="M 116 135 Q 128 145 138 140" stroke="#00F0FF" stroke-width="2" fill="none" stroke-dasharray="3,2"/>
+              </svg>
+            </div>
+
+            <!-- Funny Missile Rocket on Launch Scaffold -->
+            <div class="missile-silo" id="missile-silo" title="Click me to blast off!">
+              <div class="silo-base-platform"></div>
+              
+              <!-- Wobbly Missile Entity -->
+              <div class="wobbly-missile" id="wobbly-missile">
+                <svg class="missile-svg" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="rocketBodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#E2E8F0"/>
+                      <stop offset="35%" stop-color="#FFFFFF"/>
+                      <stop offset="70%" stop-color="#CBD5E1"/>
+                      <stop offset="100%" stop-color="#94A3B8"/>
+                    </linearGradient>
+                    <linearGradient id="noseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#DC2626"/>
+                      <stop offset="40%" stop-color="#EF4444"/>
+                      <stop offset="100%" stop-color="#991B1B"/>
+                    </linearGradient>
+                    <linearGradient id="goldFinGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#F59E0B"/>
+                      <stop offset="50%" stop-color="#FBBF24"/>
+                      <stop offset="100%" stop-color="#D97706"/>
+                    </linearGradient>
+                    <linearGradient id="flameGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stop-color="#FEF08A"/>
+                      <stop offset="40%" stop-color="#F97316"/>
+                      <stop offset="100%" stop-color="#DC2626"/>
+                    </linearGradient>
+                  </defs>
+
+                  <!-- Left & Right Fins -->
+                  <path d="M 28 135 C 15 145 6 165 4 175 C 18 175 32 165 35 150 Z" fill="url(#goldFinGrad)" stroke="#B45309" stroke-width="2"/>
+                  <path d="M 92 135 C 105 145 114 165 116 175 C 102 175 88 165 85 150 Z" fill="url(#goldFinGrad)" stroke="#B45309" stroke-width="2"/>
+
+                  <!-- Fuselage -->
+                  <path d="M 32 60 C 32 40 45 28 60 20 C 75 28 88 40 88 60 L 88 145 C 88 155 80 162 60 162 C 40 162 32 155 32 145 Z" fill="url(#rocketBodyGrad)" stroke="#334155" stroke-width="2.5"/>
+
+                  <!-- Gold and Cyan Racing Bands -->
+                  <rect x="32" y="105" width="56" height="10" fill="#F59E0B"/>
+                  <rect x="32" y="120" width="56" height="4" fill="#00F0FF"/>
+
+                  <!-- Red Nosecone -->
+                  <path d="M 32 60 C 32 35 46 15 60 5 C 74 15 88 35 88 60 Z" fill="url(#noseGrad)" stroke="#7F1D1D" stroke-width="2.5"/>
+                  <path d="M 52 14 C 44 26 40 44 40 56" stroke="#FECACA" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+                  <!-- Big Comic Googly Eyes -->
+                  <circle cx="48" cy="80" r="13" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.5"/>
+                  <circle class="rocket-pupil left-pupil" cx="50" cy="80" r="5.5" fill="#0F172A"/>
+                  <circle cx="52" cy="78" r="2" fill="#FFFFFF"/>
+                  <path class="rocket-brow" d="M 38 65 Q 48 60 58 66" stroke="#0F172A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                  <circle cx="72" cy="80" r="13" fill="#FFFFFF" stroke="#0F172A" stroke-width="2.5"/>
+                  <circle class="rocket-pupil right-pupil" cx="74" cy="80" r="5.5" fill="#0F172A"/>
+                  <circle cx="76" cy="78" r="2" fill="#FFFFFF"/>
+                  <path class="rocket-brow" d="M 64 66 Q 74 60 84 65" stroke="#0F172A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                  <!-- Wobbly Nervous Mouth -->
+                  <path class="rocket-mouth" d="M 52 100 Q 56 96 60 100 Q 64 104 68 100" stroke="#0F172A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                  <!-- ACME Duct-Tape Patch -->
+                  <g transform="rotate(-15 60 135)">
+                    <rect x="42" y="130" width="36" height="14" rx="3" fill="#D97706" stroke="#78350F" stroke-width="1.5"/>
+                    <circle cx="47" cy="137" r="1.5" fill="#78350F"/>
+                    <circle cx="53" cy="137" r="1.5" fill="#78350F"/>
+                    <circle cx="67" cy="137" r="1.5" fill="#78350F"/>
+                    <circle cx="73" cy="137" r="1.5" fill="#78350F"/>
+                    <text x="60" y="141" font-family="sans-serif" font-size="6" font-weight="900" fill="#FFF" text-anchor="middle">ACME</text>
+                  </g>
+
+                  <!-- Nozzle -->
+                  <path d="M 46 160 L 40 172 L 80 172 L 74 160 Z" fill="#334155" stroke="#1E293B" stroke-width="2"/>
+
+                  <!-- Animated Cartoon Thruster Flame -->
+                  <g class="rocket-flame-group">
+                    <path class="flame-outer" d="M 44 172 C 38 188 48 202 60 215 C 72 202 82 188 76 172 Z" fill="url(#flameGrad)"/>
+                    <path class="flame-inner" d="M 50 172 C 47 183 54 194 60 202 C 66 194 73 183 70 172 Z" fill="#FEF08A"/>
+                  </g>
+                </svg>
+              </div>
+
+              <!-- Launch Blast Clouds -->
+              <div class="launch-smoke-fx" id="launch-smoke-fx"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="hero-cta-group">
