@@ -991,6 +991,487 @@ body {
 }
 
 /* ==========================================================================
+   DEBUT TITLE #01 SPOTLIGHT: GRAND 3D CHESS
+   ========================================================================== */
+.game-spotlight-section {
+  position: relative;
+  z-index: 2;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 3rem 1.8rem 4rem;
+}
+
+.spotlight-card {
+  background: radial-gradient(ellipse at 80% 20%, rgba(245, 158, 11, 0.12) 0%, rgba(11, 14, 23, 0.95) 70%), var(--bg-card);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2.8rem;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: var(--shadow-md), 0 0 45px rgba(245, 158, 11, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--royal-gold) 50%, transparent 100%);
+  animation: shineScan 6s ease-in-out infinite;
+}
+
+.spotlight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 2.2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.spotlight-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid var(--border-gold);
+  padding: 0.45rem 1.1rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--royal-gold-light);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.spotlight-pulse {
+  display: inline-block;
+  animation: pulseIcon 2s ease-in-out infinite;
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.6)); }
+  50% { transform: scale(1.18); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.9)); }
+}
+
+.spotlight-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0, 242, 254, 0.08);
+  border: 1px solid var(--border-cyan);
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--hyper-cyan);
+  letter-spacing: 0.08em;
+  box-shadow: 0 0 16px rgba(0, 242, 254, 0.2);
+}
+
+.spotlight-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.spotlight-title {
+  font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.6rem;
+}
+
+.spotlight-tagline {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--hyper-cyan);
+  margin-bottom: 1.2rem;
+  letter-spacing: -0.01em;
+}
+
+.spotlight-desc {
+  color: var(--text-muted);
+  line-height: 1.65;
+  font-size: 1.02rem;
+  margin-bottom: 1.8rem;
+}
+
+.spotlight-desc strong {
+  color: var(--text-main);
+}
+
+.spotlight-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.spotlight-metric {
+  background: rgba(19, 24, 38, 0.7);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 0.6rem;
+  text-align: center;
+  transition: transform var(--duration-normal) var(--ease-spring), border-color var(--duration-normal);
+}
+
+.spotlight-metric:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-gold);
+}
+
+.metric-val {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--royal-gold-light);
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+
+.metric-lbl {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.spotlight-features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-bottom: 2.2rem;
+}
+
+.spotlight-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: rgba(16, 21, 36, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-md);
+}
+
+.feat-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+.spotlight-feat strong {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  margin-bottom: 0.2rem;
+}
+
+.spotlight-feat p {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.spotlight-cta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* 3D Interactive Perspective Chess Arena */
+.spotlight-visual {
+  perspective: 1200px;
+  display: flex;
+  justify-content: center;
+}
+
+.chess-arena-card {
+  width: 100%;
+  max-width: 480px;
+  background: linear-gradient(145deg, #0f1422 0%, #080b12 100%);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(245, 158, 11, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.arena-card-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.75rem;
+}
+
+.arena-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--royal-gold-light);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.live-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulseDot 1.6s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.arena-id {
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* Perspective Chessboard */
+.chess-perspective-stage {
+  perspective: 900px;
+  padding: 1.5rem 0.5rem 2.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chess-hologram-board {
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1;
+  transform: rotateX(38deg) rotateZ(-12deg);
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--ease-spring);
+  box-shadow: 
+    0 25px 40px rgba(0, 0, 0, 0.9),
+    0 0 35px rgba(245, 158, 11, 0.22),
+    inset 0 0 20px rgba(0, 242, 254, 0.15);
+  border: 4px solid #1e263d;
+  border-radius: 12px;
+  position: relative;
+  background: #080b12;
+}
+
+.chess-arena-card:hover .chess-hologram-board {
+  transform: rotateX(32deg) rotateZ(-6deg) scale(1.03);
+}
+
+.chess-grid-overlay {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chess-square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  font-size: clamp(1rem, 2.2vw, 1.4rem);
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.light-sq {
+  background: rgba(226, 232, 240, 0.08);
+}
+
+.dark-sq {
+  background: rgba(8, 11, 20, 0.85);
+}
+
+.chess-piece {
+  display: inline-block;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  transition: transform 0.25s ease;
+}
+
+.gold-piece {
+  color: #fbbf24;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.7);
+}
+
+.obs-piece {
+  color: #94a3b8;
+  text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+}
+
+.active-king {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.35) 0%, rgba(8, 11, 20, 0.85) 75%);
+}
+
+.target-sq {
+  background: radial-gradient(circle, rgba(0, 242, 254, 0.3) 0%, rgba(226, 232, 240, 0.08) 75%);
+}
+
+.active-pawn {
+  animation: floatPawn 2s ease-in-out infinite;
+}
+
+@keyframes floatPawn {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px) scale(1.15); filter: drop-shadow(0 0 12px rgba(251, 191, 36, 1)); }
+}
+
+.move-glow-ring {
+  position: absolute;
+  inset: 2px;
+  border: 1.5px solid var(--hyper-cyan);
+  border-radius: 4px;
+  animation: ringPulse 1.8s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes ringPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+.clash-sq {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.4) 0%, rgba(8, 11, 20, 0.85) 75%);
+}
+
+.clash-spark {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  font-size: 0.9rem;
+  animation: sparkBurst 1.2s infinite ease-out;
+  pointer-events: none;
+}
+
+@keyframes sparkBurst {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+.shattered-piece {
+  opacity: 0.45;
+  transform: rotate(25deg) translateY(2px);
+  filter: blur(0.5px);
+}
+
+.sq-pulse {
+  position: absolute;
+  inset: 0;
+  border: 1px dashed var(--royal-gold);
+  border-radius: 4px;
+  animation: sqRotate 8s linear infinite;
+}
+
+@keyframes sqRotate {
+  0% { transform: rotate(0deg); opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { transform: rotate(360deg); opacity: 0.3; }
+}
+
+/* Match HUD Footer */
+.chess-hud-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(11, 14, 23, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+}
+
+.hud-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.hud-label {
+  color: var(--text-dim);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.hud-value {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Responsive Breakpoints for Spotlight */
+@media (max-width: 1024px) {
+  .spotlight-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .spotlight-visual {
+    margin-top: 1rem;
+  }
+  .spotlight-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .spotlight-card {
+    padding: 2rem 1.4rem;
+  }
+  .spotlight-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .spotlight-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+  .chess-perspective-stage {
+    padding: 1rem 0 1.5rem;
+  }
+  .chess-hologram-board {
+    max-width: 280px;
+    transform: rotateX(28deg) rotateZ(-8deg);
+  }
+  .chess-hud-footer {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+}
+
+/* ==========================================================================
    CONFIDENTIAL STEALTH BANNER SECTION
    ========================================================================== */
 .stealth-banner-section {
