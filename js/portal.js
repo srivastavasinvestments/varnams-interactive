@@ -163,8 +163,8 @@ const royalAudio = new RoyalAudio();
 
 // 3. GLOBAL LAUNCH COUNTDOWN ENGINE
 function initCountdown() {
-  // Official Debut Launch Date: October 28, 2026, 18:00:00 IST (Grand 3D Chess Premiere)
-  const launchDate = new Date('2026-10-28T18:00:00+05:30');
+  // Official Debut Launch Date: November 5, 2026, 18:00:00 IST (Grand 3D Chess Premiere)
+  const launchDate = new Date('2026-11-05T18:00:00+05:30');
 
   const daysEl = document.getElementById('days-val');
   const hoursEl = document.getElementById('hours-val');
@@ -210,15 +210,15 @@ function initFunnyMissileLaunchpad() {
   if (!deck || !fireBtn) return;
 
   const funnyQuotes = [
-    "T-minus 10 days until Grand 3D Chess launches! Checkmate from orbit!",
-    "October 28 is the big day! Who taught this rocket to play the Queen's Gambit?!",
+    "Countdown to November 5! Grand 3D Chess is on the launchpad!",
+    "November 5 is the big day! Who taught this rocket to play the Queen's Gambit?!",
     "Warning: Missile fuel is 90% energy drinks & 10% chess strategy!",
     "Acme V-100 locked on target for Grand 3D Chess debut!",
     "Wait, did anyone check if the pawns are glued to the launchpad?!",
     "Don't press the red button! You'll blunder your Queen!",
     "Target coordinates locked: Straight into the 3D Chess arena!",
     "Houston, we don't have a problem, we have a CHECKMATE!",
-    "Hold onto your socks! October 28 is approaching fast!"
+    "Hold onto your socks! November 5 is approaching fast!"
   ];
 
   const launchScreams = [
