@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0d1b7a">
+  <title>Royal Smash 3D — by Varnams | Real Physics Demolition</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg?v=11.0">
+  <link rel="apple-touch-icon" href="assets/icon.svg?v=11.0">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/styles.css?v=11.6">
+
+  <!-- MediaPipe Face Mesh — Loads async for VTO-quality 3D face reconstruction -->
+  <!-- If offline/CDN fails, game works normally (sculpted face mesh fallback) -->
+  <script async src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js"
+    crossorigin="anonymous"></script>
+
+  <!-- Offline Pure-JS QR Code Generator for Varnams Direct UPI Checkout -->
+  <script src="js/qrcode.js?v=10.5"></script>
+
+  <!-- Lemon Squeezy MoR Checkout SDK (Apple Pay & Global Cards — Mirrors Chess Game) -->
+  <script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
+
+
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three.module.js",
+      "cannon-es": "./vendor/cannon-es.js"
+    }
+  }
+  </script>
+  <script>
+    window.addEventListener('error', function(e) {
+      console.error('[GlobalError]', e);
+      var el = document.getElementById('loading-sub');
+      if (el) {
+        el.innerHTML = '⚠️ Error: ' + (e.message || e.error || e);
+        el.style.color = '#ff6666';
+      }
+      var btn = document.getElementById('loading-retry-btn');
+      if (btn) btn.style.display = 'block';
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('[UnhandledRejection]', e);
+      var el = document.getElementById('loading-sub');
+      if (el) {
+        el.innerHTML = '⚠️ Promise Error: ' + (e.reason?.message || e.reason || e);
+        el.style.color = '#ff6666';
+      }
+      var btn = document.getElementById('loading-retry-btn');
+      if (btn) btn.style.display = 'block';
+    });
+  </script>
+</head>
+<body>
+
+  <!-- SVG Global Icons Sprite -->
+  <svg style="display:none;" aria-hidden="true">
+    <defs>
+      <linearGradient id="cannonBarrel" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#ffe066"/>
+        <stop offset="45%" stop-color="#f59e0b"/>
+        <stop offset="85%" stop-color="#b45309"/>
+        <stop offset="100%" stop-color="#78350f"/>
+      </linearGradient>
+      <linearGradient id="cannonWheel" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#94a3b8"/>
+        <stop offset="50%" stop-color="#475569"/>
+        <stop offset="100%" stop-color="#1e293b"/>
+      </linearGradient>
+      <linearGradient id="cannonRim" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#fef08a"/>
+        <stop offset="100%" stop-color="#d97706"/>
+      </linearGradient>
+      <symbol id="cannon-icon" viewBox="0 0 32 32">
+        <path d="M7 23 L18 20 L21 24 L10 26 Z" fill="#78350f" stroke="#451a03" stroke-width="0.8"/>
+        <g transform="rotate(-28 15 17)">
+          <circle cx="5" cy="17" r="2.2" fill="url(#cannonBarrel)"/>
+          <path d="M6 14.5 L24 13.5 L24 20.5 L6 19.5 Z" fill="url(#cannonBarrel)"/>
+          <rect x="11" y="14" width="2.2" height="6" rx="0.5" fill="url(#cannonRim)"/>
+          <rect x="17" y="13.7" width="2.2" height="6.6" rx="0.5" fill="url(#cannonRim)"/>
+          <rect x="23.5" y="13" width="2.5" height="8" rx="0.8" fill="url(#cannonRim)"/>
+          <ellipse cx="26" cy="17" rx="0.8" ry="3.8" fill="#1e1b4b"/>
+          <circle cx="14" cy="17" r="1.8" fill="#fde047" stroke="#b45309" stroke-width="0.8"/>
+          <circle cx="27" cy="17" r="1.2" fill="#38bdf8"/>
+        </g>
+        <circle cx="13" cy="22" r="6.2" fill="url(#cannonWheel)" stroke="#f59e0b" stroke-width="1"/>
+        <circle cx="13" cy="22" r="4.2" fill="none" stroke="#334155" stroke-width="1.2"/>
+        <circle cx="13" cy="22" r="2" fill="#ffd700"/>
+        <line x1="13" y1="16.5" x2="13" y2="27.5" stroke="#f59e0b" stroke-width="0.9"/>
+        <line x1="7.5" y1="22" x2="18.5" y2="22" stroke="#f59e0b" stroke-width="0.9"/>
+        <line x1="9" y1="18" x2="17" y2="26" stroke="#f59e0b" stroke-width="0.8"/>
+        <line x1="9" y1="26" x2="17" y2="18" stroke="#f59e0b" stroke-width="0.8"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <!-- ========= 📲 NATIVE APP INSTALL FLOATING BANNER ========= -->
+    <div id="native-app-install-banner" class="native-install-banner hidden">
+      <div class="nib-left">
+        <div class="nib-icon-wrap">
+          <img src="assets/icon-192.png" alt="Royal Smash 3D" class="nib-icon">
+        </div>
+        <div class="nib-text">
+          <div class="nib-title">Royal Smash 3D</div>
+          <div class="nib-sub">Install app for fullscreen & offline play!</div>
+        </div>
+      </div>
+      <div class="nib-right">
+        <button type="button" class="nib-btn-install" id="nib-install-btn">📲 INSTALL</button>
+        <button type="button" class="nib-btn-close" id="nib-close-btn" aria-label="Close">✕</button>
+      </div>
+    </div>
+
+    <!-- ========= HUD ========= -->
+    <div id="hud" class="hidden">
+
+      <!-- Top bar -->
+      <div class="hud-top">
+        <div class="hud-top-meta-row">
+          <div class="hud-left-group">
+            <button class="btn-hud-icon" id="hud-home-btn" title="Main Menu">🏠</button>
+            <button class="btn-hud-icon btn-hud-install" id="hud-install-btn" title="Install App to Home Screen">📲</button>
+            
+            <!-- ❤️ Royal Hearts (Lives) Pill -->
+            <div class="hud-hearts-pill" id="hud-hearts-btn" title="Royal Hearts (Lives) - Tap to Refill">
+              <span class="heart-icon">❤️</span>
+              <span id="hud-hearts-count">5/5</span>
+              <span class="heart-timer" id="hud-hearts-timer"></span>
+            </div>
+
+            <!-- 🔥 Crown Rush Win-Streak Pill -->
+            <div class="hud-streak-pill hidden" id="hud-streak-badge" title="Crown Rush Win Streak">
+              <span class="streak-flame">🔥</span>
+              <span class="streak-txt" id="hud-streak-text">STREAK 1</span>
+            </div>
+
+            <div class="player-badge" id="player-profile-badge" title="Tap to Edit Name">
+              <span class="badge-icon">👑</span>
+              <span class="player-name-txt" id="hud-player-name">Royal Champion</span>
+              <span class="edit-icon">✏️</span>
+            </div>
+            <button class="btn-hud-icon" id="hud-settings-btn" title="Royal Settings (Sound, Vibration & Account)">⚙️</button>
+            <button class="btn-hud-icon" id="hud-help-btn" title="How to Play / Instructions">❓</button>
+            <button class="btn-hud-mode-pill" id="hud-mode-toggle-btn" title="Switch Game Mode">
+              <span id="hud-mode-icon">🏰</span>
+              <span id="hud-mode-txt">STD</span>
+            </button>
+          </div>
+
+          <div class="hud-coins" id="hud-wallet-badge" title="Royal Treasury (Click to buy coins)">
+            <!-- ⭐ Star Chest Progress Button -->
+            <button class="hud-star-chest-btn" id="hud-star-chest-btn" title="Royal Star Chest">
+              <span class="star-icon">⭐</span>
+              <span class="star-progress-txt" id="hud-star-chest-txt">0/10</span>
+              <span class="chest-box-icon">🎁</span>
+            </button>
+
+            <!-- 🏰 My Kingdom Meta Button -->
+            <button class="hud-kingdom-btn" id="hud-kingdom-btn" title="My Kingdom Castle Restoration">
+              <span class="kingdom-icon">🏰</span>
+              <span class="kingdom-lbl">KINGDOM</span>
+            </button>
+
+            <div class="coin-badge silver" id="hud-silver-btn">
+              <span class="coin-icon">⚪</span>
+              <span id="silver-coins-display">150</span>
+            </div>
+            <div class="coin-badge gold" id="hud-gold-btn">
+              <span class="coin-icon">🪙</span>
+              <span id="gold-coins-display">25</span>
+            </div>
+            <button class="btn-hud-plus" id="hud-treasury-btn" title="Buy Coins & Offers">+</button>
+          </div>
+        </div>
+
+        <!-- Row 2: Compact Royal Command Bar -->
+        <div class="hud-center-group">
+          <div class="level-badge">
+            <span class="badge-icon">👑</span>
+            <span class="badge-lbl">LVL</span>
+            <span class="badge-num lg" id="level-number">1</span>
+          </div>
+          <div class="shot-badge" id="hud-shot-badge" title="Tap to Get More Shots" style="cursor:pointer;">
+            <span class="badge-icon">⚪</span>
+            <span class="badge-num" id="shot-count">18</span>
+            <span class="badge-lbl">SHOTS</span>
+          </div>
+          <div class="target-badge">
+            <span class="badge-icon">🎯</span>
+            <span class="badge-num" id="target-count">25</span>
+            <span class="badge-lbl">TARGETS</span>
+          </div>
+          <div class="timer-badge" id="timer-badge" title="Tap to Add More Time" style="cursor:pointer;">
+            <span class="badge-icon">⏱️</span>
+            <span class="badge-num" id="timer-text">55s</span>
+            <span class="badge-lbl">TIME</span>
+          </div>
+          <!-- 🌊 Wave Siege Indicator -->
+          <div class="wave-badge hidden" id="hud-wave-badge">
+            <span class="wave-icon">🌊</span>
+            <span id="hud-wave-text">WAVE 1/2</span>
+          </div>
+        </div>
+
+        <!-- Custom target banner (repositioned safely under stats bar) -->
+        <div id="custom-target-hud" class="custom-target-hud hidden">
+          <span class="ct-icon">🎯</span>
+          <span class="ct-label">SMASHING: <strong id="ct-name">THE BOSS</strong></span>
+        </div>
+      </div>
+
+      <!-- 👑 Always-Visible Live Boss Reaction Cam (Picture-in-Picture Widget) -->
+      <div id="hud-boss-cam" class="hud-boss-cam hidden">
+        <div class="boss-cam-container">
+          <div class="boss-cam-avatar-wrap" id="boss-cam-avatar-wrap">
+            <span class="boss-cam-crown" id="boss-cam-crown">👑</span>
+            <img id="boss-cam-img" class="boss-cam-img" src="" alt="Boss Portrait">
+            <div class="boss-cam-stars hidden" id="boss-cam-stars">💫⭐💫</div>
+            <div class="boss-cam-pill" id="boss-cam-pill">😈 SMUG</div>
+          </div>
+          <div class="boss-cam-balloon" id="boss-cam-balloon">
+            <div class="boss-cam-header">
+              <span class="boss-cam-name" id="boss-cam-name">THE BOSS</span>
+              <span class="boss-cam-status-tag" id="boss-cam-status-tag">🏰 DEFENDING</span>
+            </div>
+            <div class="boss-cam-quote" id="boss-cam-quote">"You can't smash my fortress!"</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage Title Banner -->
+      <div id="stage-banner" class="stage-banner hidden">
+        <div class="stage-num" id="stage-banner-num">LEVEL 1</div>
+        <div class="stage-name" id="stage-banner-name">ROYAL GATEWAY</div>
+      </div>
+
+      <!-- Wave Cleared Cinematic Mid-Level Banner -->
+      <div id="wave-cleared-banner" class="wave-cleared-banner hidden">
+        <div class="wave-cleared-tag">SIEGE PROGRESS</div>
+        <div class="wave-cleared-title" id="wave-cleared-title">🌊 WAVE 1 CONQUERED!</div>
+        <div class="wave-cleared-sub" id="wave-cleared-sub">+2 ROYAL REINFORCEMENTS ARRIVED! 🏰</div>
+      </div>
+
+      <!-- Aim hint ring -->
+      <div id="aim-hint" class="aim-hint">
+        <div class="aim-inner"></div>
+        <span class="aim-label">DRAG TO AIM · TAP BLASTER OR FIRE</span>
+      </div>
+
+      <!-- Touch capture zone (bottom half) -->
+      <div id="touch-zone"></div>
+
+      <!-- Bottom controls (Ammo selector with 8 projectile types + Shop + Glowing Fire button) -->
+      <div class="hud-bottom-controls">
+        <div class="ammo-selector" id="ammo-selector-tray">
+          <button class="ammo-btn active" data-type="normal" id="ammo-normal" title="Infinite Standard Iron Ball">
+            <span class="ammo-stock">∞</span>
+            <span class="ammo-icon-wrap"><span class="ammo-icon">⚪</span></span>
+            <span class="ammo-lbl">IRON</span>
+          </button>
+          <button class="ammo-btn" data-type="bomb" id="ammo-bomb" title="Explosive Area Blast">
+            <span class="ammo-stock" id="stock-bomb">x1</span>
+            <span class="ammo-icon-wrap"><span class="ammo-icon">💣</span></span>
+            <span class="ammo-lbl">BOMB</span>
+          </button>
+          <button class="ammo-btn" data-type="heavy" id="ammo-heavy" title="Dense 7.5kg Wrecking Boulder">
+            <span class="ammo-stock" id="stock-heavy">x1</span>
+            <span class="ammo-icon-wrap"><span class="ammo-icon">⚡</span></span>
+            <span class="ammo-lbl">HEAVY</span>
+          </button>
+          <button class="ammo-btn" data-type="roller" id="ammo-roller" title="Ground Bowling Deck Roller (VIP)">
+            <span class="ammo-stock" id="stock-roller">x0</span>
+            <span class="ammo-icon-wrap"><span class="ammo-icon">🎳</span></span>
+            <span class="ammo-lbl">ROLLER</span>
+          </button>
+          <button class="ammo-btn" data-type="slipper" id="ammo-slipper" title="Flying Slipper / Chappal Slap (VIP)">
+            <span class="ammo-stock" id="stock-slipper">x1</span>
+            <span class="ammo-icon-wrap"><span class="ammo-icon">🩴</span></span>
+            <span class="ammo-lbl">SLIPPER</span>
+          </button>
+          <button class="ammo-btn" data-type="boot" id="ammo-boot" title="Heavy Combat Stomp Boot (VIP)">
+            <span class="ammo-stock" id="stock-boot">x1</span>
+            <span class="ammo-icon-wrap"><span class="ammo-icon">👢</span></span>
+            <span class="ammo-lbl">BOOT</span>
+          </button>
+          <button class="ammo-btn" data-type="splash" id="ammo-splash" title="Hydro Splash Water Balloon (VIP)">
+            <span class="ammo-stock" id="stock-splash">x0</span>
+            <span class="ammo-icon-wrap"><span class="ammo-icon">💦</span></span>
+            <span class="ammo-lbl">SPLASH</span>
+          </button>
+          <button class="ammo-btn" data-type="cluster" id="ammo-cluster" title="MIRV Cluster Rocket (VIP)">
+            <span class="ammo-stock" id="stock-cluster">x0</span>
+            <span class="ammo-icon-wrap"><span class="ammo-icon">🚀</span></span>
+            <span class="ammo-lbl">CLUSTER</span>
+          </button>
+          <button class="ammo-btn btn-blaster-quick" id="hud-blaster-btn" title="Equip 3D Blaster Cannons">
+            <span class="ammo-stock gold-dot">★</span>
+            <span class="ammo-icon-wrap">
+              <span class="ammo-icon" id="hud-blaster-icon">
+                <svg class="blaster-svg"><use href="#cannon-icon"/></svg>
+              </span>
+            </span>
+            <span class="ammo-lbl">BLASTERS</span>
+          </button>
+          <button class="ammo-btn btn-market" id="open-shop-btn" title="Royal Arsenal Shop">
+            <span class="ammo-stock gold-dot">●</span>
+            <span class="ammo-icon-wrap"><span class="ammo-icon">🛒</span></span>
+            <span class="ammo-lbl">VAULT</span>
+          </button>
+        </div>
+      </div>
+    </div><!-- /hud -->
+
+    <!-- ========= STEP 1: VARNAMS COMPANY LOGO SPLASH SCREEN ========= -->
+    <div id="company-splash-screen" class="screen company-splash-screen">
+      <div class="company-splash-inner">
+        <div class="company-logo-halo">
+          <img src="assets/varnams-logo-512.png" alt="Varnams" class="company-splash-logo">
+        </div>
+        <div class="company-splash-brand">VARNAMS</div>
+        <div class="company-splash-tagline">SOVEREIGN INTERACTIVE ENTERTAINMENT</div>
+        <div class="company-splash-sub">Presents</div>
+      </div>
+    </div>
+
+    <!-- ========= STEP 2: GAME LOADING SCREEN ========= -->
+    <div id="loading-screen" class="screen hidden">
+      <div class="screen-card">
+        <div class="varnams-crest-wrap loading-crest">
+          <img src="assets/icon.svg?v=11.0" alt="Royal Smash 3D Emblem" class="varnams-crest-img">
+        </div>
+        <div class="logo-text">ROYAL<br>SMASH<span class="logo-exclaim">!</span></div>
+        <div class="loading-bar-wrap">
+          <div class="loading-bar" id="loading-bar"></div>
+        </div>
+        <div class="loading-sub" id="loading-sub">Forging Royal Citadels…</div>
+        <button id="loading-retry-btn" style="display:none;margin-top:12px;padding:8px 18px;background:linear-gradient(180deg,#ffd700,#ff8800);border:none;border-radius:20px;font-weight:900;color:#111;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.5);">▶ FORCE START</button>
+      </div>
+    </div>
+
+    <!-- ========= STEP 3: CHAMPION SIGN-IN & MODE SELECTION SCREEN ========= -->
+    <div id="onboarding-screen" class="screen hidden">
+      <div class="menu-bg-overlay"></div>
+      <div class="screen-card onboarding-card">
+        <div class="onboard-header-row">
+          <div class="varnams-crest-wrap onboard-crest">
+            <img src="assets/icon.svg?v=11.0" alt="Royal Smash 3D Emblem" class="varnams-crest-img">
+          </div>
+          <div class="onboard-title-block">
+            <div class="onboard-tag">VARNAMS ROYAL EDITION</div>
+            <div class="onboard-title">WELCOME, CHAMPION!</div>
+            <div class="onboard-sub">Enter your name, link your account & choose your battle mode</div>
+          </div>
+          <button type="button" class="btn-install-pwa onboard-install-btn" id="onboard-install-btn" title="Install App to Home Screen">📲 INSTALL APP</button>
+        </div>
+
+        <!-- 1. Player Name Entry -->
+        <div class="onboard-section">
+          <label class="onboard-label" for="onboard-name-input">👑 YOUR CHAMPION NAME</label>
+          <input type="text" id="onboard-name-input" class="onboard-input" value="Royal Champion" placeholder="Enter your name..." maxlength="16">
+        </div>
+
+        <!-- 2. Sign In with Google / Apple -->
+        <div class="onboard-section">
+          <div class="onboard-label">☁️ CLOUD SAVE & SIGN IN (OPTIONAL)</div>
+          <div class="onboard-auth-row">
+            <button type="button" class="btn-auth-social google" id="onboard-google-btn">
+              <span class="auth-social-icon">G</span>
+              <span id="onboard-google-txt">Sign in with Google</span>
+            </button>
+            <button type="button" class="btn-auth-social apple" id="onboard-apple-btn">
+              <span class="auth-social-icon"></span>
+              <span id="onboard-apple-txt">Sign in with Apple</span>
+            </button>
+          </div>
+          <!-- Inline Email Quick-Link Bar (toggled when user taps Google or Apple) -->
+          <div id="onboard-auth-drawer" class="onboard-auth-drawer hidden">
+            <input type="email" id="onboard-auth-email" class="onboard-input sm" placeholder="Enter your Google / Apple ID email...">
+            <button type="button" id="onboard-auth-confirm-btn" class="btn-onboard-auth-link">✓ Link</button>
+          </div>
+          <div id="onboard-auth-status" class="onboard-auth-status">Playing as Guest · Progress saved on device</div>
+        </div>
+
+        <!-- 3. Select Game Mode: Normal Mode OR Revenge / Stress Buster Mode -->
+        <div class="onboard-section">
+          <div class="onboard-label">⚔️ SELECT YOUR GAME MODE</div>
+          <div class="onboard-mode-grid">
+            <div class="onboard-mode-card active" id="onboard-mode-normal" data-mode="normal">
+              <div class="omc-badge">RECOMMENDED</div>
+              <div class="omc-icon">🏰</div>
+              <div class="omc-title">Normal Kingdom</div>
+              <div class="omc-desc">Demolish 78 unique multi-material 3D castles, domes, powder kegs & towers!</div>
+            </div>
+            <div class="onboard-mode-card" id="onboard-mode-revenge" data-mode="revenge">
+              <div class="omc-badge hot">STRESS BUSTER</div>
+              <div class="omc-icon">😈</div>
+              <div class="omc-title">Revenge Mode</div>
+              <div class="omc-desc">Smash Boss, Ex, or Custom Photo 3D statues with funny live reactions!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="onboard-actions">
+          <button type="button" class="btn-play" id="onboard-play-btn">⚔️ LAUNCH SIEGE NOW!</button>
+          <button type="button" class="btn-onboard-secondary" id="onboard-menu-btn">🏰 OPEN MAIN MENU</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= MAIN MENU ========= -->
+    <div id="menu-screen" class="screen hidden">
+      <div class="menu-bg-overlay"></div>
+      <div class="screen-card menu-card">
+        <div class="menu-header-bar">
+          <button class="btn-menu-mini" id="menu-settings-btn" title="Royal Settings (Sound, Vibration, Account & Mode)">⚙️ SETTINGS</button>
+          <button class="btn-menu-mini" id="menu-daily-btn" title="7-Day Daily Login Bonus">🎁 DAILY</button>
+          <button class="btn-menu-mini" id="menu-help-btn" title="How to Play / Instructions">❓ HELP</button>
+          <button class="btn-menu-mini" id="menu-leaderboard-btn" title="Leaderboard">🏆 RANKS</button>
+          <button class="btn-menu-mini btn-install-pwa" id="menu-install-btn" title="Install App to Home Screen">📲 INSTALL</button>
+        </div>
+
+        <div class="varnams-crest-wrap menu-crest">
+          <img src="assets/icon.svg?v=11.0" alt="Royal Smash 3D Emblem" class="varnams-crest-img">
+        </div>
+        <div class="logo-text">ROYAL<br>SMASH<span class="logo-exclaim">!</span></div>
+        <div class="logo-sub">78 UNIQUE REAL PHYSICS LEVELS · REAL DEMOLITION</div>
+
+        <!-- Mode Selector Switch -->
+        <div class="mode-selector-wrap">
+          <div class="mode-switch" id="mode-switch-btn" title="Switch between Standard Castles and Stress Buster Custom Mode">
+            <span class="mode-pill active" id="mode-pill-standard">🏰 Standard Kingdom</span>
+            <span class="mode-pill" id="mode-pill-boss">😈 Stress Buster (Revenge)</span>
+          </div>
+        </div>
+
+        <div class="menu-wallet-row">
+          <div class="coin-badge silver" id="menu-silver-btn"><span class="coin-icon">⚪</span><span id="menu-silver-coins">500</span> Silver</div>
+          <div class="coin-badge gold" id="menu-gold-btn"><span class="coin-icon">🪙</span><span id="menu-gold-coins">60</span> Gold</div>
+        </div>
+
+        <div class="menu-actions">
+          <button class="btn-play" id="play-btn">▶ PLAY KINGDOM</button>
+          <button class="btn-kingdom-menu" id="menu-kingdom-btn">🏰 MY KINGDOM (CASTLE RESTORATION)</button>
+          <button class="btn-blaster-menu" id="menu-blaster-btn"><svg class="blaster-svg"><use href="#cannon-icon"/></svg> 3D BLASTER CANNONS</button>
+          <button class="btn-shop-menu" id="menu-shop-btn">🛒 ROYAL ARSENAL & VAULT</button>
+          <button class="btn-vip" id="vip-btn">📸 VIP: CUSTOM PHOTO SMASH</button>
+        </div>
+
+        <div class="tagline">AIM · TAP BLASTER · DEMOLISH · MARCH TO PALACE</div>
+        <div class="menu-legal-footer">
+          <span class="brand-credit">Published by <strong>Varnams</strong></span>
+          <span class="legal-sep">·</span>
+          <a href="privacy-policy.html" target="_blank">Privacy</a>
+          <span class="legal-sep">·</span>
+          <a href="terms.html" target="_blank">Terms</a>
+          <span class="legal-sep">·</span>
+          <a href="refund-policy.html" target="_blank">Refunds</a>
+          <span class="legal-sep">·</span>
+          <a href="contact.html" target="_blank">Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= ROYAL ARSENAL & TREASURY TABBED MODAL ========= -->
+    <div id="shop-modal" class="screen hidden">
+      <div class="screen-card shop-card">
+        <div class="shop-header">
+          <div class="shop-title">🛒 ROYAL ARSENAL & VAULT</div>
+          <button class="modal-close" id="shop-close-btn">✕</button>
+        </div>
+
+        <!-- High-End Casual Mobile Tabs -->
+        <div class="shop-tabs-row">
+          <button class="shop-tab active" id="tab-btn-ammo">💣 AMMO</button>
+          <button class="shop-tab" id="tab-btn-blasters"><svg class="blaster-svg"><use href="#cannon-icon"/></svg> BLASTERS</button>
+          <button class="shop-tab" id="tab-btn-treasury">👑 VAULT</button>
+        </div>
+
+        <div class="shop-wallet-row">
+          <div class="coin-badge silver" id="shop-wallet-silver"><span class="coin-icon">⚪</span><span id="shop-silver-coins">150</span></div>
+          <div class="coin-badge gold" id="shop-wallet-gold"><span class="coin-icon">🪙</span><span id="shop-gold-coins">25</span></div>
+          <button class="btn-hud-plus" id="shop-treasury-plus-btn" title="Buy Coins">+</button>
+        </div>
+
+        <!-- Ammo Tab Content -->
+        <div class="shop-tab-content" id="tab-content-ammo">
+          <div class="shop-sub">Unlock special ammo & novelty projectiles with your Gold & Silver!</div>
+          <div class="shop-items-grid" id="shop-items-grid"></div>
+        </div>
+
+        <!-- Blaster Skins Tab Content -->
+        <div class="shop-tab-content hidden" id="tab-content-blasters">
+          <div class="shop-sub">Custom 3D Royal Blaster Cannons! Equip or unlock with your Coins:</div>
+          <div class="blaster-skins-grid" id="blaster-skins-grid"></div>
+        </div>
+
+        <!-- Treasury Tab Content -->
+        <div class="shop-tab-content hidden" id="tab-content-treasury">
+          <div class="shop-sub" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span>Emperor & King packs include lifetime VIP Pass 👑</span>
+            <div class="currency-tabs-wrap">
+              <button type="button" id="currency-tab-inr" class="currency-tab active" data-currency="INR">🇮🇳 INR (₹)</button>
+              <button type="button" id="currency-tab-usd" class="currency-tab" data-currency="USD">🌎 USD ($)</button>
+            </div>
+          </div>
+          <div class="treasury-packs-grid" id="treasury-packs-grid"></div>
+
+          <!-- Alpha (₹1) and VIP (Free) Pass Code Redeem Box (Mirrors Chess Game) -->
+          <div style="margin-top:10px;background:rgba(15,23,42,0.85);border:1px solid rgba(56,189,248,0.35);border-radius:12px;padding:10px 12px;text-align:left;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+              <div style="font-size:11px;font-weight:800;color:#f8fafc;">🔑 Redeem Alpha / VIP Pass Code</div>
+              <span style="font-size:9.5px;background:rgba(16,185,129,0.2);color:#34d399;padding:2px 6px;border-radius:6px;font-weight:800;">🔒 1-Device Lock</span>
+            </div>
+            <div style="font-size:10.5px;color:#94a3b8;margin-bottom:6px;line-height:1.3;">
+              • <strong>Alpha Pass Code:</strong> ₹1 UPI verification (+1,500 Silver + 50 Gold + VIP)<br>
+              • <strong>VIP Pass Code:</strong> Instant 100% Free Full Unlock
+            </div>
+            <div style="display:flex;gap:6px;">
+              <input type="text" id="input-tester-code" placeholder="e.g. ALPHA-7K9P-2M4X or VIP-..." style="flex:1;height:34px;font-size:11.5px;text-transform:uppercase;letter-spacing:0.6px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:8px;padding:0 10px;font-family:monospace;">
+              <button type="button" id="btn-redeem-tester-code" style="height:34px;padding:0 12px;font-size:11px;font-weight:900;background:linear-gradient(180deg,#38bdf8,#0284c7);color:#fff;border:none;border-radius:8px;cursor:pointer;white-space:nowrap;">Redeem</button>
+            </div>
+          </div>
+
+          <!-- Restore Purchases & Digital Receipts Row (Mirrors Chess Game) -->
+          <div style="margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
+            <button type="button" id="btn-store-restore" style="flex:1;padding:7px 10px;font-size:11px;font-weight:800;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#e2e8f0;border-radius:8px;cursor:pointer;">
+              🔄 Restore / Account Key
+            </button>
+            <button type="button" id="btn-store-receipts" style="flex:1;padding:7px 10px;font-size:11px;font-weight:800;background:rgba(255,215,0,0.12);border:1px solid rgba(255,215,0,0.35);color:#ffd700;border-radius:8px;cursor:pointer;">
+              🧾 Digital Receipts
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= INSUFFICIENT COINS SPECIAL PROMPT MODAL ========= -->
+    <div id="need-coins-modal" class="screen hidden">
+      <div class="screen-card need-coins-card">
+        <div class="need-coins-icon">⚔️</div>
+        <div class="need-coins-title">NEED MORE COINS!</div>
+        <div class="need-coins-sub" id="need-coins-msg">You don't have enough coins. Refill now to continue!</div>
+
+        <!-- Featured Starter Offer -->
+        <div class="need-coins-offer-box">
+          <div class="offer-badge">BEST STARTER VALUE ⭐</div>
+          <div class="offer-title">Squire's Coin Pouch</div>
+          <div class="offer-contents">⚪ +800 Silver · 🪙 +20 Gold · 💣 +1 Bomb · 🩴 +2 Slippers</div>
+          <div class="offer-price" id="need-coins-squire-price">₹49</div>
+        </div>
+
+        <!-- Value for money Upgrade Option (Best Seller) -->
+        <div class="need-coins-upgrade-box">
+          <div class="upgrade-info">
+            <div class="upgrade-tag">🔥 3.5x MORE COINS · BEST SELLER</div>
+            <div class="upgrade-name">Knight's Treasure Chest</div>
+            <div class="upgrade-sub">⚪ +2,800 Silver · 🪙 +80 Gold · +3 💣 +2 ⚡ +3 🩴</div>
+          </div>
+          <button class="btn-upgrade-pack" id="need-coins-upgrade-btn">BUY ₹149</button>
+        </div>
+
+        <div class="need-coins-actions">
+          <button class="btn-confirm-purchase" id="need-coins-buy-btn">⚡ GET SQUIRE PACK (₹49)</button>
+          <button class="btn-view-all-offers" id="need-coins-view-all-btn">🛒 VIEW ALL VAULT OFFERS →</button>
+          <button class="btn-cancel-flat" id="need-coins-cancel-btn">CANCEL & BACK</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ========= ROYAL WELCOME BOUNTY MODAL (HOOK FOR NEW PLAYERS) ========= -->
+    <div id="welcome-modal" class="screen hidden">
+      <div class="screen-card welcome-card">
+        <div class="welcome-header">
+          <div class="welcome-crest">👑</div>
+          <div class="welcome-tag">ROYAL HERALD PROCLAMATION</div>
+          <div class="welcome-title">WELCOME TO ROYAL SMASH!</div>
+          <div class="welcome-sub">The Kingdom awaits your glory! Take this starter royal treasury & siege arsenal to begin your conquest:</div>
+        </div>
+
+        <div class="welcome-rewards-grid">
+          <div class="welcome-reward-item silver">
+            <div class="reward-icon">⚪</div>
+            <div class="reward-amt">+500</div>
+            <div class="reward-lbl">SILVER COINS</div>
+          </div>
+          <div class="welcome-reward-item gold">
+            <div class="reward-icon">🪙</div>
+            <div class="reward-amt">+60</div>
+            <div class="reward-lbl">GOLD COINS</div>
+          </div>
+          <div class="welcome-reward-item arsenal">
+            <div class="reward-icon">💣</div>
+            <div class="reward-amt">+1</div>
+            <div class="reward-lbl">BOMB</div>
+          </div>
+          <div class="welcome-reward-item arsenal">
+            <div class="reward-icon">🩴</div>
+            <div class="reward-amt">+1</div>
+            <div class="reward-lbl">SLIPPER</div>
+          </div>
+          <div class="welcome-reward-item arsenal">
+            <div class="reward-icon">👢</div>
+            <div class="reward-amt">+1</div>
+            <div class="reward-lbl">BOOT</div>
+          </div>
+          <div class="welcome-reward-item arsenal">
+            <div class="reward-icon">⚡</div>
+            <div class="reward-amt">+1</div>
+            <div class="reward-lbl">HEAVY</div>
+          </div>
+        </div>
+
+        <div class="welcome-perks-note">
+          ✨ Use coins to continue streaks, refill power ammo, or restore your Royal Castle!
+        </div>
+
+        <button class="btn-claim-welcome" id="welcome-claim-btn">
+          <span>👑 CLAIM ROYAL BOUNTY & PLAY!</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========= PLAYER NAME PROFILE MODAL ========= -->
+    <div id="profile-modal" class="screen hidden">
+      <div class="screen-card profile-card">
+        <div class="profile-header">
+          <div class="profile-title">👑 ROYAL PLAYER PROFILE</div>
+          <button class="modal-close" id="profile-close-btn">✕</button>
+        </div>
+        <div class="profile-crown-avatar">👑</div>
+        <div class="vip-field">
+          <label class="vip-label">Your Champion Name:</label>
+          <input type="text" id="player-name-input" class="vip-input" value="Royal Champion" maxlength="16">
+        </div>
+        <div style="width:100%;background:rgba(15,23,42,0.75);border:1px solid rgba(255,215,0,0.3);border-radius:10px;padding:8px 10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="text-align:left;">
+            <div style="font-size:10px;color:#94a3b8;font-weight:700;">Varnams Support / Backup Key:</div>
+            <div id="profile-sync-key" style="font-size:12px;font-weight:900;color:#ffd700;font-family:monospace;">VARNAM-XXXX-YY</div>
+          </div>
+          <button type="button" id="profile-copy-key-btn" style="padding:5px 10px;font-size:10.5px;font-weight:800;background:rgba(255,215,0,0.2);border:1px solid #ffd700;color:#ffd700;border-radius:6px;cursor:pointer;">📋 Copy Key</button>
+        </div>
+        <button class="btn-confirm-purchase" id="player-name-save-btn">✓ SAVE CHAMPION NAME</button>
+      </div>
+    </div>
+
+    <!-- ========= GLOBAL LEADERBOARD MODAL ========= -->
+    <div id="leaderboard-modal" class="screen hidden">
+      <div class="screen-card leaderboard-card">
+        <div class="leaderboard-header">
+          <div class="leaderboard-title">🏆 GLOBAL ROYAL LEADERBOARD</div>
+          <button class="modal-close" id="leaderboard-close-btn">✕</button>
+        </div>
+        <div class="leaderboard-sub">Compete with the greatest fortress conquerors worldwide!</div>
+
+        <!-- Player Card -->
+        <div class="leaderboard-my-card" id="leaderboard-my-card"></div>
+
+        <!-- Leaderboard List -->
+        <div class="leaderboard-list" id="leaderboard-list"></div>
+      </div>
+    </div>
+
+    <!-- ========= SECURE CHECKOUT MODAL (MATCHING CHESS GAME: APPLE PAY, PAYPAL, UPI & PLAY STORE) ========= -->
+    <div id="checkout-modal" class="screen hidden">
+      <div class="screen-card checkout-card" style="max-width:420px;max-height:92vh;overflow-y:auto;padding:20px 18px;">
+        <div class="checkout-header">
+          <div class="checkout-brand">🔒 SECURE CHECKOUT</div>
+          <button class="modal-close" id="checkout-close-btn">✕</button>
+        </div>
+        
+        <!-- Product Summary Header (Matching Chess Game) -->
+        <div style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);border-radius:14px;padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+          <div>
+            <div style="font-weight:900;font-size:1.05rem;color:#fef3c7;" id="checkout-item-name">VIP Ad-Free Pass</div>
+            <div style="font-size:0.75rem;color:#cbd5e1;line-height:1.3;margin-top:2px;" id="checkout-item-sub">Zero ads forever + 10 free daily refills + VIP Weaponry</div>
+            <div id="checkout-discount-notice" style="font-size:0.72rem;color:#10b981;font-weight:800;margin-top:4px;">🎉 50% Launch Discount Active</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div id="checkout-orig-price" style="font-size:0.8rem;color:#94a3b8;text-decoration:line-through;margin-bottom:2px;">₹599</div>
+            <div style="font-size:1.35rem;font-weight:900;color:#fbbf24;" id="checkout-item-price">₹299</div>
+          </div>
+        </div>
+
+        <!-- Payment Option Cards (Matching Chess Game) -->
+        <div style="margin-bottom:12px;">
+          <div style="font-size:0.8rem;font-weight:800;color:#94a3b8;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;" id="checkout-payment-label">Select Payment Option</div>
+
+          <!-- Option 1: Apple Pay & Cards (Lemon Squeezy) -->
+          <div class="payment-option-card selected" id="payOptLemonSqueezy" data-method="lemonsqueezy">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span id="lemonOptIcon" style="font-size:1.35rem;">🍏</span>
+              <div>
+                <div style="font-weight:800;font-size:0.92rem;color:#f8fafc;display:flex;align-items:center;gap:6px;">
+                  <span id="lemonOptTitle">Apple Pay & Cards</span>
+                  <span id="applePayPill" style="font-size:0.65rem;background:rgba(56,189,248,0.2);border:1px solid rgba(56,189,248,0.4);color:#7dd3fc;padding:1px 6px;border-radius:8px;font-weight:800;"> Pay 1-Tap</span>
+                </div>
+                <div id="lemonOptDesc" style="font-size:0.72rem;color:#94a3b8;margin-top:2px;">Apple Pay • Credit/Debit Cards • Global MoR</div>
+              </div>
+            </div>
+            <div class="pay-radio-circle"><div class="pay-radio-dot"></div></div>
+          </div>
+
+          <!-- Option 2: PayPal -->
+          <div class="payment-option-card" id="payOptPayPal" data-method="paypal">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:1.35rem;">🅿️</span>
+              <div>
+                <div style="font-weight:800;font-size:0.92rem;color:#f8fafc;display:flex;align-items:center;gap:6px;">
+                  <span>PayPal</span>
+                  <span style="font-size:0.65rem;background:rgba(59,130,246,0.2);border:1px solid rgba(59,130,246,0.4);color:#93c5fd;padding:1px 6px;border-radius:8px;font-weight:800;">Global E-Wallet</span>
+                </div>
+                <div style="font-size:0.72rem;color:#94a3b8;margin-top:2px;">PayPal Balance • International Credit Cards • USD</div>
+              </div>
+            </div>
+            <div class="pay-radio-circle"><div class="pay-radio-dot"></div></div>
+          </div>
+
+          <!-- Option 3: UPI / QR Code (India 0% Fee) -->
+          <div class="payment-option-card" id="payOptUpi" data-method="upi">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:1.35rem;">⚡</span>
+              <div>
+                <div style="font-weight:800;font-size:0.92rem;color:#f8fafc;display:flex;align-items:center;gap:6px;">
+                  <span>UPI / QR Code</span>
+                  <span style="font-size:0.65rem;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.4);color:#6ee7b7;padding:1px 6px;border-radius:8px;font-weight:800;">India (0% Fee)</span>
+                </div>
+                <div style="font-size:0.72rem;color:#94a3b8;margin-top:2px;">Google Pay • PhonePe • Paytm • BHIM</div>
+              </div>
+            </div>
+            <div class="pay-radio-circle"><div class="pay-radio-dot"></div></div>
+          </div>
+
+          <!-- Option 4: Google Play Store Billing -->
+          <div class="payment-option-card is-hidden" id="payOptGooglePlay" data-method="googleplay" style="display:none !important;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:1.35rem;">🛒</span>
+              <div>
+                <div style="font-weight:800;font-size:0.92rem;color:#f8fafc;display:flex;align-items:center;gap:6px;">
+                  <span>Google Play Billing</span>
+                  <span style="font-size:0.65rem;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.4);color:#6ee7b7;padding:1px 6px;border-radius:8px;font-weight:800;">Play Store Official</span>
+                </div>
+                <div style="font-size:0.72rem;color:#94a3b8;margin-top:2px;">Official In-App Billing for Android</div>
+              </div>
+            </div>
+            <div class="pay-radio-circle"><div class="pay-radio-dot"></div></div>
+          </div>
+        </div>
+
+        <!-- Dynamic Payment Detail Panels -->
+        <div id="checkout-payment-details" style="margin-bottom:12px;">
+          <!-- 1. Lemon Squeezy (Apple Pay & Global Cards) -->
+          <div id="payDetailLemonSqueezy" style="background:rgba(255,255,255,0.04);border:1px solid rgba(168,85,247,0.35);border-radius:14px;padding:14px;text-align:center;">
+            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(168,85,247,0.18);border:1px solid rgba(168,85,247,0.4);padding:4px 12px;border-radius:16px;font-size:0.75rem;font-weight:800;color:#d8b4fe;margin-bottom:10px;">
+              <span>🍋</span> Lemon Squeezy Official Checkout
+            </div>
+            <div id="lemonSqueezyPppNotice" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.35);border-radius:8px;padding:6px 10px;margin-bottom:10px;font-size:0.75rem;color:#6ee7b7;text-align:center;">
+              🏷️ Code <strong style="color:#fff;">INDIA50</strong> auto-applied (50% Off at checkout)
+            </div>
+            <p id="lemonSqueezySupportText" style="font-size:0.8rem;color:#f1f5f9;line-height:1.45;margin:0 0 10px 0;">
+              Pay with <strong>Apple Pay 🍏</strong> (Safari / iOS / Mac) or any <strong>Credit / Debit Card</strong> worldwide.
+            </p>
+            <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+              <span style="font-size:0.7rem;color:#94a3b8;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);">🍏 Apple Pay</span>
+              <span style="font-size:0.7rem;color:#94a3b8;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);">💳 Visa / Mastercard</span>
+              <span style="font-size:0.7rem;color:#94a3b8;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);">🅿️ PayPal</span>
+              <span style="font-size:0.7rem;color:#94a3b8;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);">🛡️ 256-Bit SSL</span>
+            </div>
+            <button type="button" id="btnPayWithLemonSqueezy" style="width:100%;padding:10px 14px;background:#000000;border:1px solid rgba(255,255,255,0.3);border-radius:10px;color:#fff;font-size:0.88rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <span id="btnLemonIcon"></span> <span id="btnLemonText">Pay with Apple Pay</span>
+            </button>
+          </div>
+
+          <!-- 2. PayPal Gateway -->
+          <div id="payDetailPayPal" style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(59,130,246,0.35);border-radius:14px;padding:14px;text-align:center;">
+            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,0.18);border:1px solid rgba(59,130,246,0.4);padding:4px 12px;border-radius:16px;font-size:0.75rem;font-weight:800;color:#93c5fd;margin-bottom:10px;">
+              <span>🅿️</span> Official PayPal Gateway
+            </div>
+            <p style="font-size:0.8rem;color:#f1f5f9;line-height:1.45;margin:0 0 10px 0;">
+              Pay with your <strong>PayPal Account</strong>, balance, or international cards in USD or local currency.
+            </p>
+            <button type="button" id="btnPayWithPayPal" style="width:100%;padding:10px 14px;background:linear-gradient(135deg, #0070ba, #003087);border:none;border-radius:10px;color:#fff;font-size:0.88rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <span>🅿️</span> Pay with PayPal
+            </button>
+          </div>
+
+          <!-- 3. UPI / QR Code Section -->
+          <div id="payDetailUpi" style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:12px;text-align:center;">
+            <div style="font-size:0.76rem;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">
+              Scan & Pay with Any UPI App
+            </div>
+            <div id="upiExactDeductionNotice" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.35);border-radius:8px;padding:5px 8px;margin-bottom:8px;font-size:0.74rem;color:#6ee7b7;text-align:center;">
+              ⚡ Direct Bank Transfer: Exact <strong id="checkoutUpiExactAmount" style="color:#fff;">₹299</strong> deducted (0% extra fees)
+            </div>
+            
+            <!-- Dynamic QR Code Container with white quiet margin (Matching Chess Game) -->
+            <div style="display:inline-block;background:#ffffff;padding:8px;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.4);margin-bottom:8px;">
+              <div id="checkout-upi-qr" style="width:144px;height:144px;display:flex;align-items:center;justify-content:center;"></div>
+            </div>
+            
+            <!-- Merchant UPI ID with 1-Click Copy -->
+            <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px;">
+              <span style="font-size:0.74rem;color:#94a3b8;">UPI ID:</span>
+              <code id="checkout-upi-id-txt" style="font-family:monospace;font-size:0.82rem;font-weight:800;color:#38bdf8;background:rgba(56,189,248,0.12);padding:2px 8px;border-radius:6px;border:1px solid rgba(56,189,248,0.3);">varnams@upi</code>
+              <button type="button" id="btn-copy-upi-id" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#e2e8f0;font-size:0.72rem;padding:3px 8px;border-radius:6px;cursor:pointer;">📋 Copy</button>
+            </div>
+
+            <!-- 1-Tap Mobile UPI App Buttons -->
+            <div style="font-size:0.7rem;color:#94a3b8;margin-bottom:6px;">Or open directly on mobile:</div>
+            <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:6px;margin-bottom:8px;">
+              <a id="btn-pay-gpay" href="#" style="text-decoration:none;padding:7px 4px;background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.4);border-radius:8px;color:#93c5fd;font-size:0.74rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span>🔵</span> GPay
+              </a>
+              <a id="btn-pay-phonepe" href="#" style="text-decoration:none;padding:7px 4px;background:rgba(147,51,234,0.15);border:1px solid rgba(147,51,234,0.4);border-radius:8px;color:#d8b4fe;font-size:0.74rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span>🟣</span> PhonePe
+              </a>
+              <a id="btn-pay-paytm" href="#" style="text-decoration:none;padding:7px 4px;background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.4);border-radius:8px;color:#7dd3fc;font-size:0.74rem;font-weight:800;display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span>🔷</span> Paytm
+              </a>
+            </div>
+
+            <!-- Optional UTR Input -->
+            <div style="text-align:left;background:rgba(0,0,0,0.35);padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);">
+              <label style="font-size:9.5px;color:#94a3b8;font-weight:700;display:block;margin-bottom:2px;">UPI Ref / UTR No. (Optional — printed on receipt):</label>
+              <input type="text" id="checkout-utr-input" placeholder="e.g. 12-digit UTR or leave blank" maxlength="24" style="width:100%;height:28px;font-size:10.5px;background:rgba(15,23,42,0.9);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:0 8px;font-family:monospace;">
+            </div>
+          </div>
+
+          <!-- 4. Google Play Billing Section -->
+          <div id="payDetailGooglePlay" style="display:none;background:rgba(255,255,255,0.04);border:1px solid rgba(16,185,129,0.35);border-radius:14px;padding:14px;text-align:center;">
+            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.35);padding:4px 12px;border-radius:16px;font-size:0.75rem;font-weight:800;color:#6ee7b7;margin-bottom:10px;">
+              <span>🛒</span> Google Play In-App Billing
+            </div>
+            <p style="font-size:0.8rem;color:#f1f5f9;line-height:1.45;margin:0 0 10px 0;">
+              1-Tap instant checkout charged directly to your <strong>Google Play balance</strong> or linked payment methods.
+            </p>
+          </div>
+        </div>
+
+        <!-- Account Link & Receipt Email Bar -->
+        <div style="width:100%;background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:10px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:12px;">
+          <div style="text-align:left;font-size:0.74rem;color:#cbd5e1;line-height:1.3;">
+            🛡️ Linked: <strong id="checkout-account-email" style="color:#38bdf8;">Guest Account</strong>
+          </div>
+          <button type="button" id="btn-checkout-google-link" style="padding:4px 8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;font-size:0.7rem;font-weight:800;cursor:pointer;white-space:nowrap;">Link Account</button>
+        </div>
+
+        <div class="checkout-actions" style="width:100%;">
+          <button class="btn-confirm-purchase" id="checkout-confirm-btn" style="padding:14px;font-size:0.95rem;font-weight:900;">
+            <span id="checkout-btn-label">🔒 Pay Now</span>
+          </button>
+        </div>
+
+        <div style="text-align:center;font-size:0.7rem;color:#64748b;margin-top:8px;line-height:1.35;">
+          256-Bit SSL Encrypted • Powered by Varnams · <a href="refund-policy.html" target="_blank" style="color:#94a3b8;text-decoration:underline;">Refunds</a> · <a href="terms.html" target="_blank" style="color:#94a3b8;text-decoration:underline;">Terms</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= VIP / CUSTOM TARGET MODAL ========= -->
+    <div id="vip-modal" class="screen hidden">
+      <div class="screen-card vip-card">
+        <div class="vip-header">
+          <div class="vip-badge-tag">😈 STRESS BUSTER · REVENGE MODE</div>
+          <button class="vip-close" id="vip-close-btn" title="Close">✕</button>
+        </div>
+        <div class="vip-intro">
+          Put your <strong>Boss, Ex, Friend or Rival</strong> on the 3D fortress summit and smash them to pieces with live facial reactions!
+        </div>
+
+        <!-- Quick Target Presets Row -->
+        <div class="vip-preset-row">
+          <button type="button" class="vip-preset-btn active" data-preset="boss">👔 The Boss</button>
+          <button type="button" class="vip-preset-btn" data-preset="ex">💔 My Ex</button>
+          <button type="button" class="vip-preset-btn" data-preset="rival">😤 Rival</button>
+          <button type="button" class="vip-preset-btn photo" id="vip-btn-pick-custom">📸 Custom Photo</button>
+        </div>
+
+        <!-- Preview canvas / image container -->
+        <div class="vip-preview-wrap">
+          <img id="vip-preview-img" class="vip-preview-img" src="" alt="Target preview">
+        </div>
+
+        <!-- Royal Avatar Style Selector -->
+        <div class="vip-style-selector">
+          <label class="vip-label">3D Avatar Style:</label>
+          <div class="vip-style-tabs">
+            <button type="button" class="vip-style-tab active" data-style="photo" id="style-photo-btn">📸 Realistic</button>
+            <button type="button" class="vip-style-tab" data-style="cartoon" id="style-cartoon-btn">🎨 Cartoon King</button>
+            <button type="button" class="vip-style-tab" data-style="statue" id="style-statue-btn">👑 Gold Statue</button>
+          </div>
+        </div>
+
+        <!-- Target Name -->
+        <div class="vip-field">
+          <label class="vip-label">Target Name:</label>
+          <input type="text" id="target-name-input" class="vip-input" value="The Boss" maxlength="18" placeholder="Enter target name...">
+          <div class="vip-name-chips">
+            <span class="vip-chip active" data-name="The Boss">👔 The Boss</span>
+            <span class="vip-chip" data-name="My Ex">💔 My Ex</span>
+            <span class="vip-chip" data-name="Rival Colleague">😤 Rival Colleague</span>
+            <span class="vip-chip" data-name="Evil King">👑 Evil King</span>
+            <span class="vip-chip" data-name="Grumpy Boss">👿 Grumpy Boss</span>
+          </div>
+        </div>
+
+        <!-- Custom Secret Message (Revealed word-by-word in Boss Mode) -->
+        <div class="vip-field">
+          <label class="vip-label">✨ Secret Message (Revealed word-by-word on Boss wins):</label>
+          <input type="text" id="target-secret-msg-input" class="vip-input" placeholder="Type custom apology, love note, or secret message..." maxlength="120">
+          <div class="vip-name-chips">
+            <span class="vip-msg-chip" data-msg="Sorry I apologise for my behaviour and you are truly awesome please forgive me">🙏 Apology</span>
+            <span class="vip-msg-chip" data-msg="You bring genuine happiness and positive energy every single day thank you so much">❤️ Love & Thanks</span>
+            <span class="vip-msg-chip" data-msg="Happy Birthday to the most legendary royal champion in the entire realm">🎂 Birthday</span>
+            <span class="vip-msg-chip" data-msg="True friends always stand together through thick and thin forever">🤝 Friendship</span>
+          </div>
+        </div>
+
+        <!-- Upload Button with Guided Help -->
+        <div class="vip-upload-row">
+          <label class="btn-upload" for="photo-file-input">
+            📸 UPLOAD & CROP PHOTO
+          </label>
+          <input type="file" id="photo-file-input" accept="image/*" style="display:none;">
+          <div class="vip-upload-hint">💡 Use only face of target · Interactive cropper provided</div>
+        </div>
+
+        <!-- Privacy & Safe Conduct Box -->
+        <div class="vip-privacy-card">
+          <div class="vip-privacy-title">🔒 100% On-Device & Private Guarantee</div>
+          <div class="vip-privacy-body">
+            We do <strong>NOT</strong> upload, store, or transmit any images to any server. All processing runs 100% locally on your browser. Please do not upload inappropriate, abusive, or copyrighted imagery. Intended solely for personal humor and stress relief.
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <button class="btn-vip-start" id="vip-start-btn">🚀 SMASH THIS TARGET NOW!</button>
+      </div>
+    </div>
+
+    <!-- ========= INTERACTIVE PHOTO CROPPER MODAL ========= -->
+    <div id="photo-crop-modal" class="screen hidden" style="z-index: 10005;">
+      <div class="screen-card crop-card">
+        <div class="crop-header">
+          <div class="crop-title">✂️ CROP TARGET FACE</div>
+          <button class="modal-close" id="crop-close-btn" title="Cancel">✕</button>
+        </div>
+
+        <!-- Explicit User Instruction -->
+        <div class="crop-instructions">
+          <div class="crop-inst-title">🎯 Use Only Face of Target</div>
+          <div class="crop-inst-desc">
+            For optimal 3D statue generation, drag to center and use zoom to crop tightly around the face, head, and neck.
+          </div>
+        </div>
+
+        <!-- Cropper Viewport with Guide Stencil -->
+        <div class="crop-viewport-wrap" id="crop-viewport-wrap">
+          <canvas id="crop-canvas" width="340" height="340"></canvas>
+          <div class="crop-stencil-overlay">
+            <div class="crop-stencil-circle">
+              <div class="crop-crosshair-h"></div>
+              <div class="crop-crosshair-v"></div>
+              <span class="crop-guide-tag">FIT FACE HERE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zoom Slider & Controls -->
+        <div class="crop-controls-row">
+          <span class="crop-ctrl-label">🔍 Zoom:</span>
+          <input type="range" id="crop-zoom-slider" min="0.5" max="3.0" step="0.05" value="1.0" class="crop-slider">
+          <button type="button" class="btn-crop-reset" id="crop-reset-btn" title="Reset Zoom & Center">↺ Center</button>
+        </div>
+
+        <!-- Privacy & Safety Guarantee -->
+        <div class="crop-privacy-box">
+          <div class="crop-privacy-badge">🔒 100% PRIVATE & ON-DEVICE</div>
+          <p class="crop-privacy-text">
+            Photos never leave your device and are never uploaded or stored on any server.
+          </p>
+          <p class="crop-safety-text">
+            ⚠️ <strong>Notice:</strong> Strictly for humorous personal entertainment. Please do not upload inappropriate, defamatory, or unauthorized photos.
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="crop-actions">
+          <button type="button" class="btn-crop-cancel" id="crop-cancel-btn">✕ Cancel</button>
+          <button type="button" class="btn-crop-confirm" id="crop-confirm-btn">✓ CROP & USE FACE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= TARGET LOCKED / CONFIRMATION POPUP ========= -->
+    <div id="photo-confirm-modal" class="screen hidden" style="z-index: 10006;">
+      <div class="screen-card photo-confirm-card">
+        <div class="photo-confirm-tag">👑 REVENGE TARGET READY</div>
+        <div class="photo-confirm-title">TARGET LOCKED!</div>
+
+        <div class="photo-confirm-preview-wrap">
+          <img id="photo-confirm-img" class="photo-confirm-img" src="" alt="Target Preview">
+          <div class="photo-confirm-crown">👑</div>
+        </div>
+
+        <div class="photo-confirm-name" id="photo-confirm-name">The Boss</div>
+        <div class="photo-confirm-mode-tag">😈 3D PUTLA STATUE ARMED</div>
+
+        <div class="photo-confirm-sub">
+          You may like to change this target photo or continue directly to the game!
+        </div>
+
+        <div class="photo-confirm-actions">
+          <button type="button" class="btn-photo-change" id="btn-photo-change">🔄 Change Photo / Re-crop</button>
+          <button type="button" class="btn-photo-continue" id="btn-photo-continue">🚀 CONTINUE TO GAME →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= STANDARD WIN SCREEN WITH 3-STAR MASTERY ========= -->
+    <div id="win-screen" class="screen hidden">
+      <div class="screen-card result-card win-card">
+        
+        <!-- Animated 3-Star Rating Row -->
+        <div class="win-star-rating-box">
+          <div class="win-stars-row" id="win-stars-row">
+            <span class="star-slot" id="win-star-1">⭐</span>
+            <span class="star-slot" id="win-star-2">⭐</span>
+            <span class="star-slot" id="win-star-3">⭐</span>
+          </div>
+          <div class="win-star-tier-title" id="win-star-tier-title">ROYAL ACE! ⭐⭐⭐</div>
+        </div>
+
+        <div class="result-title win-title">ROYAL VICTORY!</div>
+        <div class="result-sub" id="win-summary">Targets Completely Destroyed!</div>
+        <div class="result-score" id="win-score">0 pts</div>
+
+        <!-- Star Chest Progress Meter -->
+        <div class="win-chest-meter-box" id="win-chest-meter-box">
+          <div class="chest-meter-header">
+            <span>⭐ STAR CHEST PROGRESS</span>
+            <span id="win-chest-progress-txt">0/10</span>
+          </div>
+          <div class="chest-meter-bar-track">
+            <div class="chest-meter-bar-fill" id="win-chest-bar-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- 🌟 Secret Message Progress on Victory Screen -->
+        <div class="win-secret-message-box" id="win-secret-box">
+          <div class="win-secret-header">
+            <span class="win-secret-icon">📜</span>
+            <span class="win-secret-title" id="win-secret-title">SECRET MESSAGE · CH. 1</span>
+            <span class="win-secret-count" id="win-secret-count">0/14 WORDS</span>
+          </div>
+          <div class="win-secret-words" id="win-secret-words">
+            <!-- Words populated on level clear -->
+          </div>
+        </div>
+
+        <!-- Coin Earnings Banner -->
+        <div class="win-earnings-row">
+          <div class="earn-pill"><span class="earn-icon">⚪</span>+<span id="earn-silver">45</span> Silver</div>
+          <div class="earn-pill gold"><span class="earn-icon">🪙</span>+<span id="earn-gold">5</span> Gold</div>
+        </div>
+
+        <div class="win-stats" id="win-shots-left">Shots Remaining Bonus: +500</div>
+        <button class="btn-next" id="next-btn">NEXT LEVEL →</button>
+        <div style="display:flex;gap:8px;width:100%;">
+          <button class="btn-kingdom-win" id="win-kingdom-btn" style="flex:1;">🏰 MY KINGDOM ⭐</button>
+          <button class="btn-kingdom-win" id="win-share-btn" style="flex:1;background:linear-gradient(180deg,#10b981,#047857);border-color:#6ee7b7;color:#fff;">📤 SHARE WITH FRIEND</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= GRAND PALACE GATE CINEMATIC VICTORY SCREEN ========= -->
+    <div id="palace-victory-screen" class="screen hidden">
+      <div class="palace-cinematic-bg">
+        <img src="assets/palace_celebration.jpg" alt="Grand Palace Celebration" class="palace-hero-img">
+        <canvas id="palace-celebration-canvas" class="palace-fx-canvas"></canvas>
+      </div>
+      <div class="palace-cinematic-overlay">
+        <div class="palace-crown-emblem">🏰👑🏰</div>
+        <div class="palace-epic-title">GRAND PALACE GATES CONQUERED!</div>
+        <div class="palace-epic-story">
+          The golden fortress gates swing wide open! Thousands of cheering citizens shower you with <strong>roses, lotuses, and fireworks</strong> as you enter the Throne Keep!
+        </div>
+
+        <!-- Royal Spoils Chest -->
+        <div class="palace-spoils-box">
+          <div class="spoils-title">👑 ROYAL CONQUEST SPOILS AWARDED:</div>
+          <div class="spoils-grid">
+            <div class="spoil-card"><span class="sp-icon">⚪</span><span class="sp-val">+500</span><span class="sp-lbl">Silver</span></div>
+            <div class="spoil-card gold"><span class="sp-icon">🪙</span><span class="sp-val">+35</span><span class="sp-lbl">Gold</span></div>
+            <div class="spoil-card"><span class="sp-icon">💣</span><span class="sp-val">+1</span><span class="sp-lbl">Bomb</span></div>
+            <div class="spoil-card"><span class="sp-icon">⚡</span><span class="sp-val">+1</span><span class="sp-lbl">Heavy</span></div>
+            <div class="spoil-card"><span class="sp-icon">🎳</span><span class="sp-val">+1</span><span class="sp-lbl">Roller</span></div>
+            <div class="spoil-card"><span class="sp-icon">🩴</span><span class="sp-val">+1</span><span class="sp-lbl">Slipper</span></div>
+            <div class="spoil-card"><span class="sp-icon">👢</span><span class="sp-val">+1</span><span class="sp-lbl">Boot</span></div>
+            <div class="spoil-card"><span class="sp-icon">💦</span><span class="sp-val">+1</span><span class="sp-lbl">Splash</span></div>
+            <div class="spoil-card"><span class="sp-icon">🚀</span><span class="sp-val">+1</span><span class="sp-lbl">Cluster</span></div>
+          </div>
+        </div>
+
+        <button class="btn-next btn-palace-advance" id="palace-next-btn">
+          <span>MARCH TO NEXT KINGDOM →</span>
+        </button>
+        <button class="btn-kingdom-win" id="palace-share-btn" style="margin-top:8px;max-width:280px;background:linear-gradient(180deg,#10b981,#047857);border-color:#6ee7b7;color:#fff;">
+          📤 SHARE VICTORY WITH FRIEND
+        </button>
+      </div>
+    </div>
+
+    <!-- ========= REWARDED CONTINUE MODAL (OUT OF SHOTS / OUT OF TIME) ========= -->
+    <div id="continue-modal" class="screen hidden">
+      <div class="screen-card continue-card">
+        <div class="continue-icon" id="continue-icon">💔</div>
+        <div class="continue-title" id="continue-title">OUT OF MOVES!</div>
+        <div class="continue-sub" id="continue-sub">Don't give up! Get 5 more shots to crush the remaining blocks!</div>
+
+        <div class="continue-actions">
+          <button class="btn-continue-ad" id="continue-ad-btn">
+            <span class="ad-left"><span class="ad-icon">📺</span> <span class="ad-txt" id="continue-ad-txt">WATCH AD FOR +5 SHOTS</span></span>
+            <span class="ad-badge">FREE</span>
+          </button>
+          <button class="btn-continue-coin" id="continue-coin-btn">
+            <span class="coin-icon">⚪</span>
+            <span class="coin-txt" id="continue-coin-txt">BUY +5 SHOTS (180 Silver)</span>
+          </button>
+          <button class="btn-continue-gold" id="continue-gold-btn">
+            <span class="coin-icon">🪙</span>
+            <span class="coin-txt" id="continue-gold-txt">BUY +5 SHOTS (20 Gold)</span>
+          </button>
+          <button class="btn-continue-store" id="continue-store-btn">
+            <span class="store-icon">🛒</span>
+            <span class="store-txt">REFILL COINS (ROYAL VAULT)</span>
+          </button>
+          <button class="btn-give-up" id="continue-retry-btn">↺ GIVE UP & RETRY</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= ROYAL CONFIRMATION / PROMPT MODAL ========= -->
+    <div id="confirm-modal" class="screen hidden" style="z-index: 10000;">
+      <div class="screen-card confirm-card" style="max-width: 360px; padding: 24px 22px; text-align: center; gap: 14px; background: linear-gradient(160deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98)); border: 2px solid #ffd700; border-radius: 22px; box-shadow: 0 12px 48px rgba(0,0,0,0.85); backdrop-filter: blur(12px);">
+        <div id="confirm-modal-icon" style="font-size: 40px; line-height: 1;">👑</div>
+        <div id="confirm-modal-title" style="font-size: 19px; font-weight: 900; color: #ffd700; letter-spacing: 0.6px; text-transform: uppercase;">CONFIRM</div>
+        <div id="confirm-modal-msg" style="font-size: 13.5px; color: #e2e8f0; line-height: 1.5; font-weight: 500;">Are you sure?</div>
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 6px;">
+          <button id="confirm-modal-yes-btn" style="width: 100%; padding: 13px 18px; border: none; border-radius: 14px; font-size: 14px; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; box-shadow: 0 4px 16px rgba(34, 197, 94, 0.4); text-transform: uppercase; letter-spacing: 0.4px;">
+            YES
+          </button>
+          <button id="confirm-modal-no-btn" style="width: 100%; padding: 11px 18px; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 14px; font-size: 13px; font-weight: 800; cursor: pointer; background: rgba(255,255,255,0.08); color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.4px;">
+            CANCEL
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= SIMULATED REWARDED AD OVERLAY ========= -->
+    <div id="ad-overlay" class="ad-overlay hidden">
+      <div class="ad-container">
+        <div class="ad-header">
+          <span class="ad-tag">SPONSORED REWARD</span>
+          <div class="ad-header-right">
+            <span class="ad-timer" id="ad-countdown">5s</span>
+            <button class="ad-skip-btn" id="ad-skip-btn" title="Close Ad">✕</button>
+          </div>
+        </div>
+        <div class="ad-content">
+          <div class="ad-game-logo">👑 ROYAL CRUSH SAGA ⚔️</div>
+          <div class="ad-promo-text">Collect Gold, Conquer Castles & Rule The Realm!</div>
+          <div class="ad-stars">⭐⭐⭐⭐⭐ 4.9 Rating</div>
+          <div class="ad-bar-wrap">
+            <div class="ad-progress-bar" id="ad-progress-bar"></div>
+          </div>
+        </div>
+        <button class="ad-close-btn hidden" id="ad-close-btn">✓ CLAIM REWARD</button>
+      </div>
+    </div>
+
+    <!-- ========= DRAMATIC GOLD CELEBRATION OVERLAY ========= -->
+    <div id="gold-celebration-overlay" class="gold-celebration-overlay hidden">
+      <div class="gold-sunburst-rays"></div>
+      <div class="gold-celebration-backdrop"></div>
+      <div class="gold-celebration-content">
+        <div class="gold-celebration-badge">👑 ROYAL TREASURY JACKPOT</div>
+        
+        <!-- Giant Gleaming 3D Gold Medallion with rotating rays and sparkles -->
+        <div class="gold-medallion-stage">
+          <div class="gold-sparkles-layer">
+            <span class="sparkle sp-1">✨</span>
+            <span class="sparkle sp-2">⭐</span>
+            <span class="sparkle sp-3">🌟</span>
+            <span class="sparkle sp-4">✨</span>
+            <span class="sparkle sp-5">⭐</span>
+          </div>
+          <div class="gold-giant-medallion" id="gold-giant-medallion">
+            <div class="gold-coin-inner">
+              <span class="gold-coin-crown">👑</span>
+              <span class="gold-coin-rim"></span>
+              <span class="gold-coin-sheen"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="gold-celebration-title">GOLD EARNED!</div>
+        
+        <!-- Animated Count-up Banner -->
+        <div class="gold-tally-container">
+          <div class="gold-tally-item gold">
+            <span class="tally-icon">🪙</span>
+            <span class="tally-plus">+</span>
+            <span class="tally-num" id="gold-dramatic-num">0</span>
+            <span class="tally-lbl">GOLD COINS</span>
+          </div>
+          <div class="gold-tally-item silver">
+            <span class="tally-icon">⚪</span>
+            <span class="tally-plus">+</span>
+            <span class="tally-num" id="silver-dramatic-num">0</span>
+            <span class="tally-lbl">SILVER COINS</span>
+          </div>
+        </div>
+
+        <div class="gold-celebration-sub" id="gold-celebration-sub">Stored safely in your Royal Arsenal Vault!</div>
+
+        <button class="btn-claim-gold" id="btn-claim-gold">
+          <span class="claim-shine"></span>
+          <span class="claim-icon">💰</span>
+          <span class="claim-txt">CLAIM TO ROYAL TREASURY</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========= HOW TO PLAY / INTRODUCTION TUTORIAL MODAL ========= -->
+    <div id="tutorial-modal" class="screen hidden">
+      <div class="screen-card tutorial-card">
+        <div class="tutorial-header">
+          <div class="tutorial-title">🎓 ROYAL ACADEMY: HOW TO PLAY</div>
+          <button class="modal-close" id="tutorial-close-btn">✕</button>
+        </div>
+
+        <div class="tutorial-tabs-row">
+          <button class="tut-tab active" data-step="0">1. AIM & FIRE</button>
+          <button class="tut-tab" data-step="1">2. AMMO TYPES</button>
+          <button class="tut-tab" data-step="2">3. BLASTERS</button>
+          <button class="tut-tab" data-step="3">4. STRESS BUSTER</button>
+        </div>
+
+        <div class="tutorial-step-content" id="tut-step-0">
+          <div class="tut-icon-hero">🎯</div>
+          <div class="tut-step-title">AIM, DRAG & DESTROY</div>
+          <div class="tut-step-desc">
+            • <strong>Aim:</strong> Touch & drag anywhere on the screen to swivel your cannon sight.<br>
+            • <strong>Fire:</strong> Tap the big glowing <span style="color:#ef4444;font-weight:900;">FIRE!</span> button or tap the 3D Blaster itself.<br>
+            • <strong>Objective:</strong> Knock all cans and building blocks completely off the rotating table into the moat to win!
+          </div>
+        </div>
+
+        <div class="tutorial-step-content hidden" id="tut-step-1">
+          <div class="tut-icon-hero">💣</div>
+          <div class="tut-step-title">8 UNIQUE PROJECTILES</div>
+          <div class="tut-step-desc">
+            • <strong>🔴 Iron Ball:</strong> Precision sniper single-block knockout.<br>
+            • <strong>💣 Explosive Bomb:</strong> Massive cluster shockwave demolition.<br>
+            • <strong>⚡ Heavy Boulder:</strong> Dense 7.5kg mass that topples foundational columns.<br>
+            • <strong>🎳 Deck Roller:</strong> Ground bowling ball sweeping bottom cans clean.<br>
+            • <strong>🩴 Flying Chappal / Slipper:</strong> Aerodynamic flipping slap!<br>
+            • <strong>👢 Combat Boot:</strong> Steel-toed ground stomp shockwave.<br>
+            • <strong>💦 Hydro Splash:</strong> High-pressure water burst.<br>
+            • <strong>🚀 MIRV Rocket:</strong> Splits into 5 mini-bombs before hitting!
+          </div>
+        </div>
+
+        <div class="tutorial-step-content hidden" id="tut-step-2">
+          <div class="tut-icon-hero"><svg class="blaster-svg" style="width:48px;height:48px;"><use href="#cannon-icon"/></svg></div>
+          <div class="tut-step-title">CUSTOM 3D BLASTER CANNONS</div>
+          <div class="tut-step-desc">
+            • Tap the <strong>BLASTERS</strong> button on the bottom tray anytime during gameplay.<br>
+            • Unlock and equip 5 unique 3D Blaster designs:
+              <br>&nbsp;&nbsp;👑 <strong>Royal Sovereign Cannon</strong> (Laser Sight)
+              <br>&nbsp;&nbsp;🐉 <strong>Dragon Fire Mortar</strong> (Incendiary Shockwave)
+              <br>&nbsp;&nbsp;⚡ <strong>Tesla Arc Blaster</strong> (Plasma Piercer)
+              <br>&nbsp;&nbsp;🏴‍☠️ <strong>Golden Pirate Bombardier</strong> (Broadside Ricochet)
+              <br>&nbsp;&nbsp;🍭 <strong>Candy Peppermint Blaster</strong> (Sugar Bounce)
+          </div>
+        </div>
+
+        <div class="tutorial-step-content hidden" id="tut-step-3">
+          <div class="tut-icon-hero">😈</div>
+          <div class="tut-step-title">STRESS BUSTER (BOSS MODE)</div>
+          <div class="tut-step-desc">
+            • <strong>Custom Photos:</strong> Click <strong>VIP: PHOTO SMASH</strong> to upload any photo (friend, boss, or celebrity) to turn them into a 3D bust statue ("Putla") or giant photo mosaic wall!<br>
+            • <strong>Switch Modes:</strong> Tap the <strong>[STD / BOSS]</strong> button at the top of your screen anytime to switch between authentic castles and Stress Buster mode!
+          </div>
+        </div>
+
+        <div class="tutorial-actions">
+          <button class="btn-tut-nav" id="tut-prev-btn" style="display:none;">← PREV</button>
+          <button class="btn-tut-nav" id="tut-next-btn">NEXT →</button>
+          <button class="btn-confirm-purchase" id="tut-start-btn" style="display:none;">⚔️ GOT IT! START SMASHING</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= LOSE SCREEN ========= -->
+    <div id="lose-screen" class="screen hidden">
+      <div class="screen-card result-card lose-card">
+        <div class="result-icon">💔</div>
+        <div class="result-title lose-title">OUT OF SHOTS!</div>
+        <div class="result-sub" id="lose-summary">Some targets are still standing!</div>
+        <div class="result-score" id="lose-score">0 pts</div>
+        <button class="btn-retry" id="retry-btn">↺ TRY AGAIN</button>
+      </div>
+    </div>
+
+    <!-- ========= ROYAL STAR CHEST CELEBRATION MODAL ========= -->
+    <div id="star-chest-modal" class="screen hidden">
+      <div class="screen-card star-chest-card">
+        <button class="modal-close" id="star-chest-close-btn" aria-label="Close">✕</button>
+        <div class="chest-glow-aura"></div>
+        <div class="chest-animated-icon">🎁</div>
+        <div class="star-chest-title">ROYAL STAR CHEST UNLOCKED!</div>
+        <div class="star-chest-sub">10 Stars Mastered! Your Royal Treasury Spoils:</div>
+        
+        <div class="chest-rewards-grid">
+          <div class="chest-reward-card gold"><span class="cr-icon">🪙</span><span class="cr-val">+15</span><span class="cr-lbl">Gold</span></div>
+          <div class="chest-reward-card silver"><span class="cr-icon">⚪</span><span class="cr-val">+250</span><span class="cr-lbl">Silver</span></div>
+          <div class="chest-reward-card"><span class="cr-icon">🪨</span><span class="cr-val">+2</span><span class="cr-lbl">Heavy</span></div>
+          <div class="chest-reward-card"><span class="cr-icon">🚀</span><span class="cr-val">+1</span><span class="cr-lbl">Cluster</span></div>
+          <div class="chest-reward-card"><span class="cr-icon">💦</span><span class="cr-val">+2</span><span class="cr-lbl">Splash</span></div>
+        </div>
+
+        <button class="btn-confirm-purchase btn-chest-claim" id="star-chest-claim-btn">👑 CLAIM REWARDS</button>
+      </div>
+    </div>
+
+    <!-- ========= ROYAL HEARTS (LIVES) REFILL MODAL ========= -->
+    <div id="hearts-modal" class="screen hidden">
+      <div class="screen-card hearts-card">
+        <button class="modal-close" id="hearts-close-btn">✕</button>
+        <div class="hearts-hero-icon">❤️</div>
+        <div class="hearts-title">ROYAL HEARTS (LIVES)</div>
+        <div class="hearts-current-txt" id="hearts-modal-count">3 / 5 Hearts Remaining</div>
+        <div class="hearts-regen-txt" id="hearts-modal-timer">Next Heart in: 11m 40s</div>
+        <div class="hearts-tip">Winning a level costs 0 Hearts! Only failed sieges consume a heart.</div>
+
+        <div class="hearts-options-list">
+          <div class="hearts-option-row">
+            <div class="ho-info">
+              <span class="ho-title">Full Refill (All 5 ❤️)</span>
+              <span class="ho-sub">Instant maximum siege stamina</span>
+            </div>
+            <button class="btn-ho-action gold" id="hearts-refill-gold-btn">🪙 35 Gold</button>
+          </div>
+          <div class="hearts-option-row">
+            <div class="ho-info">
+              <span class="ho-title">+1 Free Heart</span>
+              <span class="ho-sub">Watch a quick sponsor message</span>
+            </div>
+            <button class="btn-ho-action ad" id="hearts-refill-ad-btn">📺 Watch Ad</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= 🏰 MY KINGDOM CASTLE RESTORATION MODAL ========= -->
+    <div id="kingdom-modal" class="screen hidden">
+      <div class="screen-card kingdom-card">
+        <div class="kingdom-header">
+          <div class="kingdom-title-group">
+            <div class="kingdom-title">🏰 MY ROYAL KINGDOM</div>
+            <div class="kingdom-stars-badge">
+              <span class="star-icon">⭐</span>
+              <span id="kingdom-stars-avail">0</span> Stars Available
+            </div>
+          </div>
+          <button class="modal-close" id="kingdom-close-btn">✕</button>
+        </div>
+
+        <!-- Kingdom Area Tabs -->
+        <div class="kingdom-tabs-row" id="kingdom-tabs-row">
+          <button class="kingdom-tab active" data-area="throne_room">👑 THRONE ROOM</button>
+          <button class="kingdom-tab" data-area="royal_armory">⚔️ ARMORY</button>
+          <button class="kingdom-tab" data-area="clifftop_courtyard">🏰 COURTYARD</button>
+        </div>
+
+        <div class="kingdom-area-banner" id="kingdom-area-banner">
+          <div class="kab-title" id="kingdom-area-title">The Grand Throne Room</div>
+          <div class="kab-sub" id="kingdom-area-sub">Restore the royal furnishings to boost earnings and unlock perks!</div>
+        </div>
+
+        <div class="kingdom-items-grid" id="kingdom-items-grid"></div>
+      </div>
+    </div>
+
+    <!-- ========= COMBO BANNER ========= -->
+    <div id="combo-banner" class="combo-banner hidden"></div>
+
+    <!-- ========= COMIC HIT POPUP ========= -->
+    <div id="comic-popup" class="comic-popup hidden">POW!</div>
+
+    <!-- ========= MAGICAL WORD REVEAL SCROLL ========= -->
+    <!-- Words of the apology/message appear one by one as levels are cleared -->
+    <div id="word-reveal-panel" class="word-reveal-panel hidden">
+      <!-- Miniature Boss Face Avatar Above Secret Message -->
+      <div class="wrp-boss-badge" id="wrp-boss-badge" title="The Boss">
+        <span class="wrp-boss-crown">👑</span>
+        <img id="wrp-boss-img" class="wrp-boss-img" src="" alt="Boss">
+      </div>
+      <div class="wrp-header">
+        <span class="wrp-icon">✨</span>
+        <span class="wrp-label" id="wrp-label-text">Secret Message</span>
+        <span class="wrp-icon">✨</span>
+      </div>
+
+      <div id="word-reveal-words" class="word-reveal-words"></div>
+      <div class="wrp-footer" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <span id="wrp-progress-txt" class="wrp-progress-txt">Level 1 unlocks next word...</span>
+        <button type="button" id="secret-share-btn" style="padding:3px 8px;border-radius:10px;border:1px solid #ffd700;background:rgba(255,215,0,0.2);color:#ffd700;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap;">📤 Share</button>
+      </div>
+    </div>
+
+
+    <!-- New word popup (appears center screen on level complete) -->
+    <div id="word-reveal-popup" class="word-reveal-popup hidden">
+      <div class="wrp-popup-inner">
+        <div class="wrp-popup-sparkles">✨ 🌟 ✨</div>
+        <div id="word-reveal-popup-word" class="wrp-popup-word"></div>
+        <div class="wrp-popup-sub">New word revealed!</div>
+      </div>
+    </div>
+
+    <!-- ========= 🎁 7-DAY DAILY LOGIN BONUS MODAL ========= -->
+    <div id="daily-bonus-modal" class="screen hidden">
+      <div class="screen-card" style="max-width:400px;gap:10px;padding:18px 16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+          <div style="font-size:15px;font-weight:900;color:#ffd700;letter-spacing:0.5px;">🎁 7-DAY ROYAL DAILY STREAK</div>
+          <button class="modal-close" id="daily-bonus-close-btn">✕</button>
+        </div>
+        <div style="font-size:11.5px;color:#cbd5e1;text-align:center;">
+          Log in daily to claim free Silver, Bombs, Slippers & the Day 7 Royal Chest!
+        </div>
+        <div id="daily-bonus-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin:4px 0;"></div>
+        <button class="btn-confirm-purchase" id="daily-bonus-claim-btn" style="width:100%;">🎁 CLAIM TODAY'S GIFT</button>
+      </div>
+    </div>
+
+    <!-- ========= 🔄 ACCOUNT RESTORE & CLOUD SYNC MODAL (MIRRORS CHESS GAME) ========= -->
+    <div id="restore-account-modal" class="screen hidden">
+      <div class="screen-card" style="max-width:410px;gap:10px;padding:18px 16px;text-align:left;">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+          <div style="font-size:15px;font-weight:900;color:#ffd700;">🔄 RESTORE & CLOUD SYNC</div>
+          <button class="modal-close" id="restore-close-btn">✕</button>
+        </div>
+
+        <!-- Your Current Support ID -->
+        <div style="width:100%;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.35);border-radius:10px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:10px;color:#fde047;font-weight:800;">YOUR VARNAMS SUPPORT / BACKUP KEY</div>
+            <div id="restore-my-sync-key" style="font-size:13.5px;font-weight:900;color:#fff;font-family:monospace;letter-spacing:1px;">VARNAM-7281-9X</div>
+          </div>
+          <button type="button" id="btn-copy-my-sync-key" style="padding:6px 10px;background:#ffd700;color:#0f172a;border:none;border-radius:8px;font-size:11px;font-weight:900;cursor:pointer;">📋 Copy ID</button>
+        </div>
+
+        <!-- Option 1: Link / Restore via Google Account Email -->
+        <div style="width:100%;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);border-radius:12px;padding:10px 12px;">
+          <div style="font-size:10.5px;font-weight:900;color:#60a5fa;text-transform:uppercase;margin-bottom:3px;">☁️ Option 1: Google Account Cloud Link (Recommended)</div>
+          <div style="font-size:11px;color:#cbd5e1;margin-bottom:8px;line-height:1.35;">
+            Link your Google email to receive Digital Purchase Receipts & sync your account across Varnams games:
+          </div>
+          <div style="display:flex;gap:6px;">
+            <input type="email" id="input-restore-google-email" placeholder="yourname@gmail.com" style="flex:1;height:34px;font-size:11.5px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.22);color:#fff;border-radius:8px;padding:0 10px;">
+            <button type="button" id="btn-restore-google-link" style="height:34px;padding:0 12px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap;">Link & Sync</button>
+          </div>
+        </div>
+
+        <!-- Option 2: Restore via Backup Key (Single-Device Guard) -->
+        <div style="width:100%;background:rgba(15,23,42,0.85);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 12px;">
+          <div style="font-size:10.5px;font-weight:900;color:#e2e8f0;text-transform:uppercase;margin-bottom:4px;">🔑 Option 2: Transfer via Backup Key</div>
+          <input type="text" id="input-restore-account-key" placeholder="e.g. VARNAM-7281-9X" style="width:100%;height:34px;text-transform:uppercase;font-family:monospace;font-size:12px;letter-spacing:1px;font-weight:800;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.22);color:#fff;border-radius:8px;padding:0 10px;margin-bottom:8px;">
+          <button type="button" id="btn-confirm-restore-account" class="btn-confirm-purchase" style="width:100%;padding:9px;font-size:12px;">
+            🔄 Transfer Account to This Device
+          </button>
+        </div>
+
+        <div style="font-size:10px;color:#fbbf24;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:7px 9px;line-height:1.35;">
+          🔒 <strong>Single Active Device Policy:</strong> Restoring on this device transfers ownership and deauthorizes previous sessions. Need manual restore help? Email <a href="mailto:support@varnams.in" style="color:#ffd700;text-decoration:underline;">support@varnams.in</a> with your Key or Receipt ID.
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= 🧾 DIGITAL RECEIPT & EMAIL CONFIRMATION MODAL ========= -->
+    <div id="receipt-modal" class="screen hidden">
+      <div class="screen-card" style="max-width:400px;gap:10px;padding:18px 16px;text-align:left;">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+          <div style="font-size:15px;font-weight:900;color:#10b981;">🧾 VARNAMS DIGITAL RECEIPT</div>
+          <button class="modal-close" id="receipt-close-btn">✕</button>
+        </div>
+
+        <div id="receipt-card-body" style="width:100%;background:rgba(15,23,42,0.92);border:1.5px dashed rgba(16,185,129,0.5);border-radius:12px;padding:12px;font-size:11.5px;color:#e2e8f0;line-height:1.6;">
+          <!-- Populated dynamically with Transaction ID, UTR, Item, Price, Support Key, Date -->
+        </div>
+
+        <!-- Email Input for Instant Email Confirmation -->
+        <div style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 10px;">
+          <label style="font-size:10px;color:#94a3b8;font-weight:700;display:block;margin-bottom:4px;">📧 Your Email for Confirmation Copy:</label>
+          <input type="email" id="receipt-email-input" placeholder="yourname@gmail.com" style="width:100%;height:32px;font-size:11.5px;background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:0 8px;">
+        </div>
+
+        <div style="display:flex;gap:6px;width:100%;">
+          <button type="button" id="btn-email-receipt" class="btn-confirm-purchase" style="flex:1.3;padding:9px 8px;font-size:11px;background:linear-gradient(180deg,#10b981,#047857);">
+            📧 Email Confirmation
+          </button>
+          <button type="button" id="btn-copy-receipt" style="flex:1;padding:9px 8px;font-size:11px;font-weight:800;background:rgba(56,189,248,0.2);border:1px solid #38bdf8;color:#38bdf8;border-radius:10px;cursor:pointer;">
+            📋 Copy Receipt
+          </button>
+        </div>
+
+        <!-- Recent Receipts History List -->
+        <div id="receipt-history-wrap" style="width:100%;max-height:110px;overflow-y:auto;font-size:10.5px;color:#94a3b8;"></div>
+      </div>
+    </div>
+
+    <!-- ========= PWA INSTALL APP MODAL ========= -->
+    <div id="pwa-install-modal" class="screen hidden">
+      <div class="screen-card" style="gap:14px;padding:24px 20px;max-width:360px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+          <div style="font-size:16px;font-weight:900;color:#ffd700;letter-spacing:1px;">📲 INSTALL ROYAL SMASH 3D</div>
+          <button class="modal-close" id="pwa-install-close-btn">✕</button>
+        </div>
+        <div class="varnams-crest-wrap" style="width:76px;height:76px;">
+          <img src="assets/icon.svg?v=11.0" alt="Royal Smash 3D Emblem" class="varnams-crest-img">
+        </div>
+        <div style="font-size:12.5px;color:#dbeafe;text-align:center;line-height:1.5;">
+          Install <strong>Royal Smash 3D</strong> on your phone or desktop for instant full-screen launch and offline access!
+        </div>
+        <div id="pwa-native-install-wrap" style="width:100%;display:none;">
+          <button class="btn-confirm-purchase" id="pwa-trigger-native-btn" style="width:100%;">⚡ INSTALL APP NOW</button>
+        </div>
+        <div id="pwa-manual-guide" style="width:100%;background:rgba(15,23,42,0.85);border:1.5px solid rgba(255,215,0,0.35);border-radius:16px;padding:12px 14px;font-size:12px;color:#e2e8f0;line-height:1.6;">
+          <div style="color:#ffd700;font-weight:800;margin-bottom:6px;">📱 How to Add to Home Screen:</div>
+          <div><strong>• Android (Chrome):</strong> Tap the browser menu <strong>⋮</strong> (top-right) → select <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>.</div>
+          <div style="margin-top:6px;"><strong>• iPhone / iPad (Safari):</strong> Tap the <strong>Share</strong> icon <strong>[↑]</strong> at the bottom → select <strong>"Add to Home Screen"</strong>.</div>
+        </div>
+        <button class="btn-cancel-flat" id="pwa-install-gotit-btn" style="width:100%;">GOT IT</button>
+      </div>
+    </div>
+
+    <!-- ========= ⚙️ ROYAL SETTINGS MODAL (SOUND, VIBRATION, MODE, ACCOUNT) ========= -->
+    <div id="settings-modal" class="screen hidden">
+      <div class="screen-card settings-card">
+        <div class="settings-header">
+          <div class="settings-title">⚙️ ROYAL SETTINGS</div>
+          <button class="modal-close" id="settings-close-btn">✕</button>
+        </div>
+
+        <!-- 1. Sound & Haptics Toggles -->
+        <div class="settings-group">
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <span class="settings-row-icon" id="settings-sound-icon">🔊</span>
+              <div>
+                <div class="settings-row-title">Game Sound & SFX</div>
+                <div class="settings-row-sub">Cannon blasts, royal fanfare & glass shatter</div>
+              </div>
+            </div>
+            <button type="button" class="settings-toggle-btn active" id="settings-sound-toggle">ON</button>
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <span class="settings-row-icon" id="settings-vibe-icon">📳</span>
+              <div>
+                <div class="settings-row-title">Phone Vibration (Haptics)</div>
+                <div class="settings-row-sub">Tactile rumble on cannon fire & heavy impacts</div>
+              </div>
+            </div>
+            <button type="button" class="settings-toggle-btn active" id="settings-vibe-toggle">ON</button>
+          </div>
+        </div>
+
+        <!-- 2. Game Mode Switch -->
+        <div class="settings-group">
+          <div class="settings-group-label">⚔️ GAMEPLAY MODE</div>
+          <div class="settings-mode-row">
+            <button type="button" class="settings-mode-btn active" id="settings-mode-normal">
+              🏰 Normal Kingdom
+            </button>
+            <button type="button" class="settings-mode-btn" id="settings-mode-revenge">
+              😈 Revenge (Boss/Ex)
+            </button>
+          </div>
+          <div class="settings-auto-note">
+            ✨ Live Animated Sky & Multi-Material Castle Structures automatically evolve as you advance through stages!
+          </div>
+        </div>
+
+        <!-- 3. Champion Profile & Cloud Sign-In -->
+        <div class="settings-group">
+          <div class="settings-group-label">👑 CHAMPION PROFILE & SIGN IN</div>
+          <div style="display:flex;gap:6px;width:100%;margin-bottom:8px;">
+            <input type="text" id="settings-name-input" class="onboard-input sm" value="Royal Champion" maxlength="16" placeholder="Champion Name">
+            <button type="button" id="settings-name-save-btn" class="btn-onboard-auth-link">Save</button>
+          </div>
+          <div class="onboard-auth-row">
+            <button type="button" class="btn-auth-social google" id="settings-google-btn">
+              <span class="auth-social-icon">G</span>
+              <span id="settings-google-txt">Google Sign-In</span>
+            </button>
+            <button type="button" class="btn-auth-social apple" id="settings-apple-btn">
+              <span class="auth-social-icon"></span>
+              <span id="settings-apple-txt">Apple Sign-In</span>
+            </button>
+          </div>
+          <div id="settings-auth-status" class="onboard-auth-status">Support Key: VARNAM-XXXX</div>
+        </div>
+
+        <button type="button" class="btn-confirm-purchase" id="settings-done-btn" style="width:100%;">✓ DONE & RESUME</button>
+      </div>
+    </div>
+
+  </div><!-- /game-container -->
+
+  <script type="module" src="js/main.js?v=11.6"></script>
+
+  <script>
+    // Register PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js').catch(function(err) {
+          console.warn('[PWA] Service Worker registration note:', err);
+        });
+      });
+    }
+
+    // ── Handle Native App Install Prompt & Devices Flow ──────────────────────
+    (function() {
+      var deferredPrompt = null;
+      var banner = document.getElementById('native-app-install-banner');
+      var nibInstallBtn = document.getElementById('nib-install-btn');
+      var nibCloseBtn = document.getElementById('nib-close-btn');
+      var onboardInstallBtn = document.getElementById('onboard-install-btn');
+      var hudInstallBtn = document.getElementById('hud-install-btn');
+      var menuInstallBtn = document.getElementById('menu-install-btn');
+      var modal = document.getElementById('pwa-install-modal');
+      var closeBtn = document.getElementById('pwa-install-close-btn');
+      var gotItBtn = document.getElementById('pwa-install-gotit-btn');
+      var nativeWrap = document.getElementById('pwa-native-install-wrap');
+      var triggerNativeBtn = document.getElementById('pwa-trigger-native-btn');
+
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      var isDismissed = sessionStorage.getItem('varnams_smash_install_dismissed') === '1';
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+      function showInstallBanner() {
+        if (isStandalone || isDismissed || !banner) return;
+        banner.classList.remove('hidden');
+      }
+
+      function hideInstallBanner() {
+        if (banner) banner.classList.add('hidden');
+        sessionStorage.setItem('varnams_smash_install_dismissed', '1');
+      }
+
+      function triggerInstall() {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then(function(choice) {
+            if (choice.outcome === 'accepted') {
+              hideInstallBanner();
+            }
+            deferredPrompt = null;
+          });
+        } else {
+          // On iOS Safari or unsupported browsers, show the step-by-step install modal
+          if (modal) modal.classList.remove('hidden');
+        }
+      }
+
+      // 1. Android / Chrome native PWA install trigger
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (nativeWrap) nativeWrap.style.display = 'block';
+        showInstallBanner();
+      });
+
+      // 2. Hide immediately once installed
+      window.addEventListener('appinstalled', function() {
+        hideInstallBanner();
+        [banner, onboardInstallBtn, hudInstallBtn, menuInstallBtn].forEach(function(el) {
+          if (el) el.style.display = 'none';
+        });
+        console.log('[PWA] Royal Smash 3D successfully installed!');
+      });
+
+      // 3. Auto-show install banner on iOS Safari if not installed
+      if (isIOS && !isStandalone && !isDismissed) {
+        setTimeout(showInstallBanner, 1500);
+      }
+
+      // Wire up all install buttons
+      [nibInstallBtn, onboardInstallBtn, hudInstallBtn, menuInstallBtn, triggerNativeBtn].forEach(function(btn) {
+        if (btn) btn.addEventListener('click', triggerInstall);
+      });
+
+      if (nibCloseBtn) nibCloseBtn.addEventListener('click', hideInstallBanner);
+      if (closeBtn && modal) closeBtn.onclick = function() { modal.classList.add('hidden'); };
+      if (gotItBtn && modal) gotItBtn.onclick = function() { modal.classList.add('hidden'); };
+
+      // Hide install buttons if already running as standalone native app
+      if (isStandalone) {
+        [banner, onboardInstallBtn, hudInstallBtn, menuInstallBtn].forEach(function(el) {
+          if (el) el.style.display = 'none';
+        });
+      }
+    })();
+
+    setTimeout(function() {
+      if (!window._royalSmashStarted) {
+        if (typeof window._manualStartRoyalSmash === 'function') {
+          window._manualStartRoyalSmash();
+        } else {
+          var sub = document.getElementById('loading-sub');
+          if (sub) sub.innerHTML = 'Still loading... If stuck, tap below:';
+          var btn = document.getElementById('loading-retry-btn');
+          if (btn) {
+            btn.style.display = 'block';
+            btn.onclick = function() {
+              window.location.reload(true);
+            };
+          }
+        }
+      }
+    }, 2800);
+  </script>
+</body>
+</html>

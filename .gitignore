@@ -5,10 +5,10 @@ decision-arcade/
 just-desserts/
 mob-controller/
 revenge/
-royal-smash/
 secretquest/
 truth-and-dare/
 adda-90s/
+adda-v2/
 desi-cards/
 
 # Internal Game Design & Strategy Docs (Stealth Embargo)
@@ -25,5 +25,7 @@ logo-view.html
 # System & Editor Artifacts
 .DS_Store
 *.log
+*.key
+*.pem
 .system_generated/
 scratch/

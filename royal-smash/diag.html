@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Royal Smash - Diagnostic</title>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/",
+      "cannon-es": "https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"
+    }
+  }
+  </script>
+  <style>
+    body { background: #111; color: #0f0; font-family: monospace; padding: 20px; }
+    .ok { color: #0f0; } .err { color: #f44; } .warn { color: #fa0; }
+    canvas { border: 2px solid #0f0; display: block; margin: 10px 0; }
+  </style>
+</head>
+<body>
+<h2>🔬 Royal Smash Diagnostic</h2>
+<div id="log"></div>
+<canvas id="c" width="400" height="200"></canvas>
+
+<script type="module">
+  const log = (msg, cls='ok') => {
+    document.getElementById('log').innerHTML +=
+      `<div class="${cls}">${msg}</div>`;
+    console.log(msg);
+  };
+
+  log('⏳ Starting diagnostics...');
+
+  // Test 1: Three.js
+  try {
+    const THREE = await import('three');
+    log(`✅ Three.js loaded — r${THREE.REVISION}`);
+
+    // Test renderer
+    const canvas = document.getElementById('c');
+    const renderer = new THREE.WebGLRenderer({ canvas });
+    renderer.setSize(400, 200);
+    log('✅ WebGLRenderer created');
+
+    const scene = new THREE.Scene();
+    const cam = new THREE.PerspectiveCamera(60, 2, 0.1, 100);
+    cam.position.z = 3;
+    scene.add(new THREE.AmbientLight(0xffffff, 1));
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 16, 16),
+      new THREE.MeshStandardMaterial({ color: 0xffd700 })
+    );
+    scene.add(mesh);
+    renderer.render(scene, cam);
+    log('✅ Basic scene rendered (gold sphere visible below)');
+  } catch(e) {
+    log(`❌ Three.js error: ${e.message}`, 'err');
+    log(e.stack, 'err');
+  }
+
+  // Test 2: Three.js addons
+  try {
+    const { EffectComposer } = await import('three/addons/postprocessing/EffectComposer.js');
+    const { RenderPass }     = await import('three/addons/postprocessing/RenderPass.js');
+    const { UnrealBloomPass } = await import('three/addons/postprocessing/UnrealBloomPass.js');
+    log('✅ Three.js addons (EffectComposer, RenderPass, UnrealBloomPass) loaded');
+  } catch(e) {
+    log(`⚠️ Three.js addons error: ${e.message}`, 'warn');
+  }
+
+  // Test 3: cannon-es
+  try {
+    const { World, Body, Sphere, Vec3, SAPBroadphase } = await import('cannon-es');
+    log('✅ cannon-es loaded');
+    const world = new World({ gravity: new Vec3(0, -9.8, 0) });
+    world.broadphase = new SAPBroadphase(world);
+    const body = new Body({ mass: 1, shape: new Sphere(1) });
+    world.addBody(body);
+    world.fixedStep(1/60, 1/60);
+    log(`✅ cannon-es World.fixedStep() works — body Y: ${body.position.y.toFixed(3)}`);
+  } catch(e) {
+    log(`❌ cannon-es error: ${e.message}`, 'err');
+    log(e.stack, 'err');
+  }
+
+  // Test 4: Check our game modules
+  try {
+    const { RenderEngine } = await import('./js/engine.js');
+    log('✅ engine.js imports fine');
+  } catch(e) {
+    log(`❌ engine.js error: ${e.message}`, 'err');
+    log(e.stack || '', 'err');
+  }
+
+  try {
+    const { PhysicsWorld } = await import('./js/physics.js');
+    log('✅ physics.js imports fine');
+  } catch(e) {
+    log(`❌ physics.js error: ${e.message}`, 'err');
+    log(e.stack || '', 'err');
+  }
+
+  try {
+    const { RoyalCannon } = await import('./js/cannon_gun.js');
+    log('✅ cannon_gun.js imports fine');
+  } catch(e) {
+    log(`❌ cannon_gun.js error: ${e.message}`, 'err');
+    log(e.stack || '', 'err');
+  }
+
+  try {
+    await import('./js/structures.js');
+    log('✅ structures.js imports fine');
+  } catch(e) {
+    log(`❌ structures.js error: ${e.message}`, 'err');
+    log(e.stack || '', 'err');
+  }
+
+  try {
+    const { textureGen } = await import('./js/textures.js');
+    log('✅ textures.js imports fine — procedural Fleur-de-lis & Pinwheel textures active');
+  } catch(e) {
+    log(`❌ textures.js error: ${e.message}`, 'err');
+    log(e.stack || '', 'err');
+  }
+
+  try {
+    const { LEVELS } = await import('./js/levels.js');
+    log(`✅ levels.js imports fine — ${LEVELS.length} diverse stages loaded across 5 worlds`);
+  } catch(e) {
+    log(`❌ levels.js error: ${e.message}`, 'err');
+    log(e.stack || '', 'err');
+  }
+
+  try {
+    const { customTargets } = await import('./js/custom_target.js');
+    log(`✅ custom_target.js imports fine — Default preset: "${customTargets.targetName}"`);
+  } catch(e) {
+    log(`❌ custom_target.js error: ${e.message}`, 'err');
+    log(e.stack || '', 'err');
+  }
+
+  // Test 5: Build Level 1 & 2 structures in a test physics world
+  try {
+    const { PhysicsWorld } = await import('./js/physics.js');
+    const { createPedestal, createRoyalCan, createFleurCan, createGemBeam, createHorizontalCan, createRoyalBlock } = await import('./js/structures.js');
+    const { LEVELS } = await import('./js/levels.js');
+    const THREE = await import('three');
+
+    const testScene = new THREE.Scene();
+    const testPhys = new PhysicsWorld();
+    testPhys.init();
+
+    const ped = createPedestal(testScene, testPhys, { x: 0, y: 0, z: 0 });
+    log(`✅ Pedestal created — platformY = ${ped.platformY.toFixed(2)}`);
+
+    const lvl1Items = LEVELS[0].build(ped.platformY);
+    log(`✅ Level 1 ("${LEVELS[0].name}") built ${lvl1Items.length} items (Monumental Royal Wall)`);
+
+    const lvl2Items = LEVELS[1].build(ped.platformY);
+    log(`✅ Level 2 ("${LEVELS[1].name}") built ${lvl2Items.length} items (Fleur Citadel)`);
+  } catch(e) {
+    log(`❌ Structure build test error: ${e.message}`, 'err');
+    log(e.stack || '', 'err');
+  }
+
+  log('');
+  log('🏁 Diagnostics complete.');
+</script>
+</body>
+</html>
