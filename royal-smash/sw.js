@@ -1,4 +1,4 @@
-const CACHE_NAME = 'royal-smash-varnams-v11.6';
+const CACHE_NAME = 'royal-smash-varnams-v11.7';
 const CORE_ASSETS = [
   './',
   './index.html',
