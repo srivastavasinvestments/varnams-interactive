@@ -320,6 +320,29 @@
       </div>
     </div><!-- /hud -->
 
+    <!-- ========= 🔒 VARNAMS VIP PASSCODE SECURITY GATE (Passcode: Biryani) ========= -->
+    <div id="auth-gate-screen" class="screen auth-gate-screen hidden">
+      <div class="menu-bg-overlay"></div>
+      <div class="screen-card auth-card">
+        <div class="varnams-crest-wrap auth-crest">
+          <img src="assets/varnams-logo-512.png" alt="Varnams Sovereign" class="varnams-crest-img">
+        </div>
+        <div class="auth-badge">👑 VARNAMS CONFIDENTIAL ALPHA</div>
+        <div class="auth-title">VIP ACCESS GATE</div>
+        <div class="auth-sub">Enter your authorized VIP Passcode to unlock <strong>Royal Smash 3D</strong> and enable installation.</div>
+        
+        <div class="auth-input-wrap">
+          <input type="password" id="auth-pass-input" class="auth-input" placeholder="Enter VIP Passcode..." autocomplete="off">
+          <button type="button" id="auth-toggle-pwd" class="auth-eye-btn" title="Show / Hide Passcode">👁️</button>
+        </div>
+        <div id="auth-error-msg" class="auth-error-msg hidden">⚠️ Invalid Passcode. Please contact Varnams Support.</div>
+
+        <button type="button" class="btn-play auth-submit-btn" id="auth-submit-btn">🔓 UNLOCK & PLAY</button>
+        
+        <div class="auth-hint">Publisher: Varnams Interactive • support@varnams.in</div>
+      </div>
+    </div>
+
     <!-- ========= STEP 1: VARNAMS COMPANY LOGO SPLASH SCREEN ========= -->
     <div id="company-splash-screen" class="screen company-splash-screen">
       <div class="company-splash-inner">
@@ -1631,6 +1654,82 @@
 
   </div><!-- /game-container -->
 
+  <script>
+    // 🔒 VARNAMS VIP PASSCODE GATEKEEPER (Passcode: Biryani)
+    (function() {
+      var saved = localStorage.getItem('varnams_vip_auth');
+      var isAuth = Boolean(saved && saved.trim().toLowerCase() === 'biryani');
+      window._isVipAuthorized = isAuth;
+
+      function initVipGate() {
+        var gate = document.getElementById('auth-gate-screen');
+        var passInput = document.getElementById('auth-pass-input');
+        var submitBtn = document.getElementById('auth-submit-btn');
+        var toggleEye = document.getElementById('auth-toggle-pwd');
+        var errorMsg = document.getElementById('auth-error-msg');
+        var splash = document.getElementById('company-splash-screen');
+
+        if (window._isVipAuthorized) {
+          if (gate) gate.classList.add('hidden');
+          return;
+        }
+
+        // Lock down: hide splash screen and display VIP gate
+        if (splash) splash.classList.add('hidden');
+        if (gate) gate.classList.remove('hidden');
+
+        function verifyAndUnlock() {
+          var val = (passInput.value || '').trim();
+          if (val.toLowerCase() === 'biryani') {
+            localStorage.setItem('varnams_vip_auth', 'Biryani');
+            window._isVipAuthorized = true;
+            if (gate) gate.classList.add('hidden');
+            if (splash) splash.classList.remove('hidden');
+
+            // Launch Royal Smash game engine
+            if (typeof window._manualStartRoyalSmash === 'function') {
+              window._manualStartRoyalSmash();
+            }
+
+            // Enable PWA install prompt now that user is authorized
+            if (typeof window._checkPwaInstallEligibility === 'function') {
+              window._checkPwaInstallEligibility();
+            }
+          } else {
+            if (errorMsg) {
+              errorMsg.classList.remove('hidden');
+              errorMsg.textContent = '⚠️ Invalid Passcode. Access Restricted.';
+            }
+            if (passInput) {
+              passInput.classList.add('shake');
+              setTimeout(function() { passInput.classList.remove('shake'); }, 500);
+              passInput.focus();
+            }
+          }
+        }
+
+        if (submitBtn) submitBtn.addEventListener('click', verifyAndUnlock);
+        if (passInput) {
+          passInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') verifyAndUnlock();
+          });
+        }
+        if (toggleEye && passInput) {
+          toggleEye.addEventListener('click', function() {
+            passInput.type = passInput.type === 'password' ? 'text' : 'password';
+            toggleEye.textContent = passInput.type === 'password' ? '👁️' : '🔒';
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initVipGate);
+      } else {
+        initVipGate();
+      }
+    })();
+  </script>
+
   <script type="module" src="js/main.js?v=11.6"></script>
 
   <script>
@@ -1643,7 +1742,7 @@
       });
     }
 
-    // ── Handle Native App Install Prompt & Devices Flow ──────────────────────
+    // ── Handle Native App Install Prompt & Devices Flow (VIP Protected) ──────
     (function() {
       var deferredPrompt = null;
       var banner = document.getElementById('native-app-install-banner');
@@ -1663,9 +1762,11 @@
       var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
       function showInstallBanner() {
-        if (isStandalone || isDismissed || !banner) return;
+        // Strict Gate: Only show install banner if VIP passcode is verified!
+        if (!window._isVipAuthorized || isStandalone || isDismissed || !banner) return;
         banner.classList.remove('hidden');
       }
+      window._checkPwaInstallEligibility = showInstallBanner;
 
       function hideInstallBanner() {
         if (banner) banner.classList.add('hidden');
@@ -1673,6 +1774,7 @@
       }
 
       function triggerInstall() {
+        if (!window._isVipAuthorized) return;
         if (deferredPrompt) {
           deferredPrompt.prompt();
           deferredPrompt.userChoice.then(function(choice) {
@@ -1682,7 +1784,6 @@
             deferredPrompt = null;
           });
         } else {
-          // On iOS Safari or unsupported browsers, show the step-by-step install modal
           if (modal) modal.classList.remove('hidden');
         }
       }
@@ -1727,7 +1828,7 @@
     })();
 
     setTimeout(function() {
-      if (!window._royalSmashStarted) {
+      if (window._isVipAuthorized && !window._royalSmashStarted) {
         if (typeof window._manualStartRoyalSmash === 'function') {
           window._manualStartRoyalSmash();
         } else {

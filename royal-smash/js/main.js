@@ -5364,6 +5364,11 @@ class RoyalSmash {
 }
 
 function _startRoyalSmash() {
+  // 🔒 VIP Passcode Security Gate Check (Passcode: Biryani)
+  if (!window._isVipAuthorized) {
+    console.log('[VIP Gate] Protected — waiting for VIP Passcode authorization.');
+    return;
+  }
   if (window._royalSmashStarted) return;
   window._royalSmashStarted = true;
   try {
@@ -5386,9 +5391,11 @@ function _startRoyalSmash() {
 
 window._manualStartRoyalSmash = _startRoyalSmash;
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', _startRoyalSmash);
-} else {
-  _startRoyalSmash();
+if (window._isVipAuthorized) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _startRoyalSmash);
+  } else {
+    _startRoyalSmash();
+  }
 }
 
