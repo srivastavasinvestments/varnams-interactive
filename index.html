@@ -45,7 +45,10 @@
 
       <div class="nav-actions">
         <button id="sound-toggle-btn" class="btn-icon" title="Toggle Sound FX" aria-label="Toggle Sound">🔊</button>
-        <button id="theme-toggle-btn" class="btn-icon" title="Toggle Theme" aria-label="Toggle Theme">☀️</button>
+        <button id="theme-toggle-btn" class="btn-icon" title="Themes / Customize" aria-label="Toggle Theme">🎨</button>
+        <button id="btn-wp-admin-login" class="wp-login-chip" title="Studio Admin Login">
+          <span>⚙️</span> Admin
+        </button>
       </div>
     </div>
   </header>
@@ -55,7 +58,7 @@
     <div class="hero-content">
       <div class="royal-pill">
         <span class="pulse-crown">👑</span>
-        <span>LAUNCH WINDOW OPEN • TITLE #01: GRAND 3D CHESS • NOVEMBER 5, 2026</span>
+        <span>LAUNCH WINDOW OPEN • TITLE #01: GRAND 3D CHESS • DECEMBER 4, 2026</span>
       </div>
 
       <h1 class="hero-title">
@@ -74,25 +77,25 @@
             <span>♟️</span> TITLE #01 DEBUT: GRAND 3D CHESS
           </div>
           <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--hyper-cyan);">
-            WORLD PREMIERE: NOV 5, 2026
+            WORLD PREMIERE: DEC 4, 2026
           </span>
         </div>
 
         <div class="countdown-grid">
           <div class="countdown-unit">
-            <div id="days-val" class="unit-value">08</div>
+            <div id="days-val" class="unit-value">29</div>
             <div class="unit-label">Days</div>
           </div>
           <div class="countdown-unit">
-            <div id="hours-val" class="unit-value">10</div>
+            <div id="hours-val" class="unit-value">17</div>
             <div class="unit-label">Hours</div>
           </div>
           <div class="countdown-unit">
-            <div id="mins-val" class="unit-value">18</div>
+            <div id="mins-val" class="unit-value">40</div>
             <div class="unit-label">Minutes</div>
           </div>
           <div class="countdown-unit">
-            <div id="secs-val" class="unit-value">24</div>
+            <div id="secs-val" class="unit-value">14</div>
             <div class="unit-label">Seconds</div>
           </div>
         </div>
@@ -339,7 +342,7 @@
         </div>
         <div class="spotlight-date-badge">
           <span class="badge-icon">🚀</span>
-          <span class="badge-text">LAUNCH DATE: NOVEMBER 5, 2026</span>
+          <span class="badge-text">LAUNCH DATE: DECEMBER 4, 2026</span>
         </div>
       </div>
 
@@ -533,7 +536,7 @@
               </div>
               <div class="hud-stat">
                 <span class="hud-label">PHYSICS ENGINE</span>
-                <span class="hud-value text-cyan-gradient">ACTIVE • NOV 5, 2026</span>
+                <span class="hud-value text-cyan-gradient">ACTIVE • DEC 4, 2026</span>
               </div>
             </div>
           </div>
@@ -551,14 +554,14 @@
       <div class="stealth-content">
         <h3>Grand 3D Chess Cleared for Staging • Secondary Slate Under Embargo</h3>
         <p>
-          While <strong>Grand 3D Chess</strong> is officially declassified for its November 5 world premiere, our secondary production slate (bespoke multi-genre battlefields, rigid physics sieges, and psychological scenario engines) remains under strict confidential embargo ahead of future launch windows.
+          While <strong>Grand 3D Chess</strong> is officially declassified for its December 4 world premiere, our secondary production slate (bespoke multi-genre battlefields, rigid physics sieges, and psychological scenario engines) remains under strict confidential embargo ahead of future launch windows.
         </p>
         <div class="stealth-features">
           <div class="stealth-item">
             <span class="stealth-icon">♟️</span>
             <div>
               <strong>Debut Title Priority</strong>
-              <p>Grand 3D Chess leads our launch window on Nov 5, 2026.</p>
+              <p>Grand 3D Chess leads our launch window on Dec 4, 2026.</p>
             </div>
           </div>
           <div class="stealth-item">
@@ -766,6 +769,141 @@
       <div>Designed with High-Performance HTML5, Sovereign CSS3 & ES6 Canvas.</div>
     </div>
   </footer>
+
+  <!-- WordPress-Style Admin Bar (Visible when logged in) -->
+  <div id="wp-admin-bar" class="wp-admin-bar" style="display: none;">
+    <div class="wp-admin-left">
+      <div class="wp-brand" id="wp-bar-home">
+        <span>👑</span>
+        <span>VARNAMS Studio</span>
+      </div>
+      <button class="wp-bar-btn" id="wp-bar-customize">
+        <span>🎨</span> Customize Themes
+      </button>
+      <button class="wp-bar-btn" id="wp-bar-animation">
+        <span>✨</span> Animation FX
+      </button>
+      <span class="wp-theme-pill" id="wp-current-theme-label">Cyber-Sovereign</span>
+    </div>
+    <div class="wp-admin-right">
+      <span>Howdy, <strong>Suyash</strong> (Admin)</span>
+      <button class="wp-bar-btn" id="wp-bar-logout" style="border-color: #d63638; color: #ff8080;">
+        Log Out
+      </button>
+    </div>
+  </div>
+
+  <!-- WordPress Login Modal -->
+  <div id="wp-login-modal" class="wp-modal-backdrop">
+    <div class="wp-modal-card">
+      <div class="wp-modal-header">
+        <div class="wp-modal-title">
+          <span>👑</span> VARNAMS Studio Login
+        </div>
+        <button class="wp-close-btn" id="btn-close-wp-login">✕</button>
+      </div>
+      <div class="wp-modal-body">
+        <form id="wp-login-form">
+          <div class="wp-form-group">
+            <label class="wp-form-label" for="wp-login-user">Username or Email Address</label>
+            <input type="text" id="wp-login-user" class="wp-form-input" placeholder="admin or suyash" required autocomplete="username">
+          </div>
+          <div class="wp-form-group">
+            <label class="wp-form-label" for="wp-login-pass">Password</label>
+            <input type="password" id="wp-login-pass" class="wp-form-input" placeholder="••••••••" required autocomplete="current-password">
+            <div class="wp-form-help">Default Demo Pass: <strong>admin</strong> or <strong>varnams2026</strong></div>
+          </div>
+          <button type="submit" class="wp-btn-submit">
+            Log In to Studio Admin
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- WordPress Theme Customizer Modal -->
+  <div id="wp-customizer-modal" class="wp-modal-backdrop">
+    <div class="wp-modal-card" style="max-width: 580px;">
+      <div class="wp-modal-header">
+        <div class="wp-modal-title">
+          <span>🎨</span> Theme Customizer • Appearance
+        </div>
+        <button class="wp-close-btn" id="btn-close-wp-customizer">✕</button>
+      </div>
+      <div class="wp-modal-body">
+        <p style="font-size: 12px; color: #a7aaad; margin-bottom: 14px;">
+          Choose from all 4 handcrafted sovereign studio themes. Your selection persists across visits:
+        </p>
+
+        <!-- 4 Theme Cards -->
+        <div class="wp-themes-grid">
+          <!-- Theme 1 -->
+          <div class="wp-theme-card active" data-theme-val="cyber-sovereign">
+            <div class="wp-theme-preview" style="background: linear-gradient(135deg, #06080d 0%, #131826 50%, #00f2fe 100%); color: #fbbf24;">
+              ⚡
+            </div>
+            <div class="wp-theme-title">Cyber-Sovereign</div>
+            <div class="wp-theme-desc">Obsidian black, Royal Gold, and pulsing neon cyan circuits.</div>
+          </div>
+
+          <!-- Theme 2 -->
+          <div class="wp-theme-card" data-theme-val="imperial-gold">
+            <div class="wp-theme-preview" style="background: linear-gradient(135deg, #050814 0%, #0a0f24 50%, #ffd700 100%); color: #ffd700;">
+              👑
+            </div>
+            <div class="wp-theme-title">Imperial Royal</div>
+            <div class="wp-theme-desc">Velvet midnight navy, 24K solid gold, and warm amber glows.</div>
+          </div>
+
+          <!-- Theme 3 -->
+          <div class="wp-theme-card" data-theme-val="galactic-nebula">
+            <div class="wp-theme-preview" style="background: linear-gradient(135deg, #0a0614 0%, #1c1038 50%, #e879f9 100%); color: #c084fc;">
+              🌌
+            </div>
+            <div class="wp-theme-title">Galactic Nebula</div>
+            <div class="wp-theme-desc">Cosmic stardust purple, stellar violet, and aurora gradients.</div>
+          </div>
+
+          <!-- Theme 4 -->
+          <div class="wp-theme-card" data-theme-val="minimalist-titanium">
+            <div class="wp-theme-preview" style="background: linear-gradient(135deg, #0c0d10 0%, #1b1e26 50%, #38bdf8 100%); color: #93c5fd;">
+              🛡️
+            </div>
+            <div class="wp-theme-title">Minimalist Titanium</div>
+            <div class="wp-theme-desc">Brushed matte carbon, steel chrome, and sharp azure edges.</div>
+          </div>
+        </div>
+
+        <!-- Animation Style Section -->
+        <div style="border-top: 1px solid #3c434a; padding-top: 14px; margin-top: 14px;">
+          <label class="wp-form-label">Background Animation FX</label>
+          <div class="wp-anim-picker">
+            <div class="wp-anim-option active" data-anim-val="constellation">
+              <span>🕸️</span>
+              <div>
+                <strong>Dynamic Constellation Mesh</strong>
+                <div style="font-size: 11px; color: #8c8f94;">Floating geometric nodes connected with luminous vectors and mouse repulsion.</div>
+              </div>
+            </div>
+            <div class="wp-anim-option" data-anim-val="embers">
+              <span>🔥</span>
+              <div>
+                <strong>Cinematic Golden Embers</strong>
+                <div style="font-size: 11px; color: #8c8f94;">Warm radiant particles ascending slowly into the night sky.</div>
+              </div>
+            </div>
+            <div class="wp-anim-option" data-anim-val="warp">
+              <span>⚡</span>
+              <div>
+                <strong>Cyber Matrix Grid / Warp Lines</strong>
+                <div style="font-size: 11px; color: #8c8f94;">Futuristic streaming hyperspace beams and glowing network packets.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Main Script -->
   <script src="js/portal.js"></script>

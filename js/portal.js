@@ -163,8 +163,8 @@ const royalAudio = new RoyalAudio();
 
 // 3. GLOBAL LAUNCH COUNTDOWN ENGINE
 function initCountdown() {
-  // Official Debut Launch Date: November 5, 2026, 18:00:00 IST (Grand 3D Chess Premiere)
-  const launchDate = new Date('2026-11-05T18:00:00+05:30');
+  // Official Debut Launch Date: December 4, 2026, 18:00:00 IST (Grand 3D Chess Premiere)
+  const launchDate = new Date('2026-12-04T18:00:00+05:30');
 
   const daysEl = document.getElementById('days-val');
   const hoursEl = document.getElementById('hours-val');
@@ -210,15 +210,15 @@ function initFunnyMissileLaunchpad() {
   if (!deck || !fireBtn) return;
 
   const funnyQuotes = [
-    "Countdown to November 5! Grand 3D Chess is on the launchpad!",
-    "November 5 is the big day! Who taught this rocket to play the Queen's Gambit?!",
+    "Countdown to December 4! Grand 3D Chess is on the launchpad!",
+    "December 4 is the big day! Who taught this rocket to play the Queen's Gambit?!",
     "Warning: Missile fuel is 90% energy drinks & 10% chess strategy!",
     "Acme V-100 locked on target for Grand 3D Chess debut!",
     "Wait, did anyone check if the pawns are glued to the launchpad?!",
     "Don't press the red button! You'll blunder your Queen!",
     "Target coordinates locked: Straight into the 3D Chess arena!",
     "Houston, we don't have a problem, we have a CHECKMATE!",
-    "Hold onto your socks! November 5 is approaching fast!"
+    "Hold onto your socks! December 4 is approaching fast!"
   ];
 
   const launchScreams = [
@@ -724,76 +724,320 @@ function showToast(msg, icon = '👑') {
   }, 3800);
 }
 
-// 8. BACKGROUND CONSTELLATION CANVAS
+// 8. MULTI-MODE BACKGROUND ANIMATION ENGINE
+let activeAnimMode = localStorage.getItem('varnams_anim_mode') || 'constellation';
+
 function initAmbientCanvas() {
   const canvas = document.getElementById('ambient-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let width, height;
   let particles = [];
-  const count = 40;
+  let mouse = { x: -1000, y: -1000 };
+
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
 
   function resize() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
+    initParticles();
   }
   window.addEventListener('resize', resize);
+
+  function getThemeColor() {
+    const theme = document.documentElement.getAttribute('data-theme') || 'cyber-sovereign';
+    if (theme === 'imperial-gold') return { r: 255, g: 215, b: 0 };
+    if (theme === 'galactic-nebula') return { r: 192, g: 132, b: 252 };
+    if (theme === 'minimalist-titanium') return { r: 96, g: 165, b: 250 };
+    return { r: 245, g: 158, b: 11 }; // Cyber-Sovereign default
+  }
+
+  function initParticles() {
+    particles = [];
+    const count = activeAnimMode === 'embers' ? 65 : (activeAnimMode === 'warp' ? 70 : 45);
+
+    for (let i = 0; i < count; i++) {
+      if (activeAnimMode === 'embers') {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: -Math.random() * 1.5 - 0.5,
+          radius: Math.random() * 2.5 + 1,
+          alpha: Math.random() * 0.7 + 0.2,
+          decay: Math.random() * 0.005 + 0.002
+        });
+      } else if (activeAnimMode === 'warp') {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          length: Math.random() * 40 + 20,
+          speed: Math.random() * 4 + 2,
+          alpha: Math.random() * 0.5 + 0.2
+        });
+      } else {
+        // Constellation mesh
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: (Math.random() - 0.5) * 0.6,
+          radius: Math.random() * 2.5 + 1.2,
+          alpha: Math.random() * 0.5 + 0.2
+        });
+      }
+    }
+  }
+
   resize();
 
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      radius: Math.random() * 2 + 1,
-      alpha: Math.random() * 0.35 + 0.1
-    });
-  }
+  window.setAmbientAnimationMode = function(mode) {
+    activeAnimMode = mode;
+    localStorage.setItem('varnams_anim_mode', mode);
+    initParticles();
+  };
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
+    const col = getThemeColor();
 
-    for (let i = 0; i < count; i++) {
-      let p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
+    if (activeAnimMode === 'embers') {
+      // Cinematic Golden Embers
+      for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.decay;
 
-      if (p.x < 0) p.x = width;
-      if (p.x > width) p.x = 0;
-      if (p.y < 0) p.y = height;
-      if (p.y > height) p.y = 0;
+        if (p.alpha <= 0 || p.y < -10) {
+          p.x = Math.random() * width;
+          p.y = height + 10;
+          p.alpha = Math.random() * 0.7 + 0.2;
+          p.vy = -Math.random() * 1.5 - 0.5;
+        }
 
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(245, 158, 11, ${p.alpha})`;
-      ctx.fill();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${p.alpha})`;
+        ctx.shadowColor = `rgba(${col.r}, ${col.g}, ${col.b}, 0.8)`;
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    } else if (activeAnimMode === 'warp') {
+      // Cyber Warp Lines / Digital Streams
+      for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        p.y += p.speed;
+        if (p.y > height) {
+          p.y = -p.length;
+          p.x = Math.random() * width;
+        }
 
-      for (let j = i + 1; j < count; j++) {
-        let p2 = particles[j];
-        let dx = p.x - p2.x;
-        let dy = p.y - p2.y;
-        let dist = Math.sqrt(dx * dx + dy * dy);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x, p.y + p.length);
+        ctx.strokeStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${p.alpha})`;
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
 
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(245, 158, 11, ${(1 - dist / 120) * 0.1})`;
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y + p.length, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${col.r}, ${col.g}, ${col.b}, 1)`;
+        ctx.fill();
+      }
+    } else {
+      // Interactive Constellation Mesh with Mouse Repulsion
+      for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Mouse repulsion
+        let mdx = p.x - mouse.x;
+        let mdy = p.y - mouse.y;
+        let mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+        if (mdist < 140) {
+          let force = (140 - mdist) / 140;
+          p.x += (mdx / mdist) * force * 3;
+          p.y += (mdy / mdist) * force * 3;
+        }
+
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${p.alpha})`;
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          let p2 = particles[j];
+          let dx = p.x - p2.x;
+          let dy = p.y - p2.y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 130) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${(1 - dist / 130) * 0.15})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
         }
       }
     }
+
     requestAnimationFrame(draw);
   }
 
   requestAnimationFrame(draw);
 }
 
-// 9. INITIALIZE ON LOAD
+// 9. WORDPRESS-STYLE ADMIN & THEME CONTROLLER
+function initWordPressAdmin() {
+  const adminBar = document.getElementById('wp-admin-bar');
+  const loginModal = document.getElementById('wp-login-modal');
+  const customizerModal = document.getElementById('wp-customizer-modal');
+  const loginBtn = document.getElementById('btn-wp-admin-login');
+  const closeLoginBtn = document.getElementById('btn-close-wp-login');
+  const closeCustomizerBtn = document.getElementById('btn-close-wp-customizer');
+  const loginForm = document.getElementById('wp-login-form');
+  const customizeBarBtn = document.getElementById('wp-bar-customize');
+  const animationBarBtn = document.getElementById('wp-bar-animation');
+  const logoutBtn = document.getElementById('wp-bar-logout');
+  const themeToggleBtn = document.getElementById('theme-toggle-btn');
+  const currentThemeLabel = document.getElementById('wp-current-theme-label');
+
+  const themeDisplayNames = {
+    'cyber-sovereign': 'Cyber-Sovereign',
+    'imperial-gold': 'Imperial Royal',
+    'galactic-nebula': 'Galactic Nebula',
+    'minimalist-titanium': 'Minimalist Titanium'
+  };
+
+  function applyTheme(themeKey) {
+    document.documentElement.setAttribute('data-theme', themeKey);
+    localStorage.setItem('varnams_theme', themeKey);
+
+    if (currentThemeLabel) {
+      currentThemeLabel.textContent = themeDisplayNames[themeKey] || themeKey;
+    }
+
+    document.querySelectorAll('.wp-theme-card').forEach(card => {
+      card.classList.toggle('active', card.getAttribute('data-theme-val') === themeKey);
+    });
+
+    showToast(`Active Theme: ${themeDisplayNames[themeKey] || themeKey}`, '🎨');
+  }
+
+  // Check saved theme
+  const savedTheme = localStorage.getItem('varnams_theme') || 'cyber-sovereign';
+  applyTheme(savedTheme);
+
+  // Check saved admin status
+  const isLoggedIn = localStorage.getItem('varnams_admin_logged_in') === 'true';
+  function updateAdminState(loggedIn) {
+    if (adminBar) adminBar.style.display = loggedIn ? 'flex' : 'none';
+    if (loginBtn) loginBtn.style.display = loggedIn ? 'none' : 'inline-flex';
+    document.body.classList.toggle('admin-logged-in', loggedIn);
+  }
+  updateAdminState(isLoggedIn);
+
+  // Open Login Modal
+  if (loginBtn) {
+    loginBtn.addEventListener('click', () => {
+      loginModal.classList.add('active');
+    });
+  }
+
+  if (closeLoginBtn) {
+    closeLoginBtn.addEventListener('click', () => {
+      loginModal.classList.remove('active');
+    });
+  }
+
+  // Handle Login Form Submit
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      localStorage.setItem('varnams_admin_logged_in', 'true');
+      updateAdminState(true);
+      loginModal.classList.remove('active');
+      showToast('Welcome back, Admin Suyash!', '👑');
+      if (customizerModal) customizerModal.classList.add('active');
+    });
+  }
+
+  // Logout
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('varnams_admin_logged_in');
+      updateAdminState(false);
+      showToast('Logged out of WordPress Admin', '🔒');
+    });
+  }
+
+  // Customizer Modal Triggers
+  function openCustomizer() {
+    if (customizerModal) customizerModal.classList.add('active');
+  }
+
+  if (customizeBarBtn) customizeBarBtn.addEventListener('click', openCustomizer);
+  if (animationBarBtn) animationBarBtn.addEventListener('click', openCustomizer);
+  if (themeToggleBtn) themeToggleBtn.addEventListener('click', openCustomizer);
+
+  if (closeCustomizerBtn) {
+    closeCustomizerBtn.addEventListener('click', () => {
+      customizerModal.classList.remove('active');
+    });
+  }
+
+  // Click outside to close modals
+  [loginModal, customizerModal].forEach(modal => {
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('active');
+      });
+    }
+  });
+
+  // Theme selection cards
+  document.querySelectorAll('.wp-theme-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const themeVal = card.getAttribute('data-theme-val');
+      royalAudio.playTone(550, 0.08);
+      applyTheme(themeVal);
+    });
+  });
+
+  // Animation selection options
+  const savedAnim = localStorage.getItem('varnams_anim_mode') || 'constellation';
+  document.querySelectorAll('.wp-anim-option').forEach(opt => {
+    opt.classList.toggle('active', opt.getAttribute('data-anim-val') === savedAnim);
+    opt.addEventListener('click', () => {
+      const animVal = opt.getAttribute('data-anim-val');
+      document.querySelectorAll('.wp-anim-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      royalAudio.playTone(700, 0.08);
+      if (window.setAmbientAnimationMode) {
+        window.setAmbientAnimationMode(animVal);
+      }
+      showToast(`Animation Mode: ${animVal.toUpperCase()}`, '✨');
+    });
+  });
+}
+
+// 10. INITIALIZE ON LOAD
 document.addEventListener('DOMContentLoaded', () => {
   initAmbientCanvas();
+  initWordPressAdmin();
   initCountdown();
   initFunnyMissileLaunchpad();
 
@@ -817,24 +1061,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const enabled = royalAudio.toggle();
       soundBtn.textContent = enabled ? '🔊' : '🔇';
       showToast(enabled ? 'Royal Audio Enabled' : 'Royal Audio Muted', enabled ? '🔊' : '🔇');
-    });
-  }
-
-  // Theme Toggle
-  const themeBtn = document.getElementById('theme-toggle-btn');
-  if (themeBtn) {
-    const saved = localStorage.getItem('varnams_theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', saved);
-    themeBtn.textContent = saved === 'light' ? '🌙' : '☀️';
-
-    themeBtn.addEventListener('click', () => {
-      royalAudio.playTone(400, 0.06);
-      const curr = document.documentElement.getAttribute('data-theme');
-      const next = curr === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('varnams_theme', next);
-      themeBtn.textContent = next === 'light' ? '🌙' : '☀️';
-      showToast(`Switched to ${next} sovereign mode`, next === 'light' ? '☀️' : '🌙');
     });
   }
 
