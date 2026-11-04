@@ -45,7 +45,6 @@
 
       <div class="nav-actions">
         <button id="sound-toggle-btn" class="btn-icon" title="Toggle Sound FX" aria-label="Toggle Sound">🔊</button>
-        <button id="theme-toggle-btn" class="btn-icon" title="Themes / Customize" aria-label="Toggle Theme">🎨</button>
         <button id="btn-wp-admin-login" class="wp-login-chip" title="Studio Admin Login">
           <span>⚙️</span> Admin
         </button>
@@ -196,8 +195,16 @@
 
             <!-- Funny Missile Rocket on Launch Scaffold -->
             <div class="missile-silo" id="missile-silo" title="Click me to blast off!">
-              <div class="silo-base-platform"></div>
-              
+              <!-- Gantry Support Scaffold Tower Behind Rocket -->
+              <div class="launch-gantry-scaffold">
+                <div class="gantry-beam left-beam"></div>
+                <div class="gantry-cross cross-1"></div>
+                <div class="gantry-cross cross-2"></div>
+                <div class="gantry-cross cross-3"></div>
+                <div class="gantry-beam right-beam"></div>
+                <div class="gantry-arm-clamp"></div>
+              </div>
+
               <!-- Wobbly Missile Entity -->
               <div class="wobbly-missile" id="wobbly-missile">
                 <svg class="missile-svg" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
@@ -274,6 +281,9 @@
                   </g>
                 </svg>
               </div>
+
+              <!-- Heavy Steel Launch Base Platform directly under Rocket -->
+              <div class="silo-base-platform"></div>
 
               <!-- Launch Blast Clouds -->
               <div class="launch-smoke-fx" id="launch-smoke-fx"></div>

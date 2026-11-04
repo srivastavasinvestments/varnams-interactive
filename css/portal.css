@@ -624,15 +624,15 @@ body {
 
 /* Stage Layout */
 .deck-stage {
-  display: grid;
-  grid-template-columns: 1fr 125px;
+  display: flex;
+  justify-content: space-between;
   align-items: flex-end;
-  gap: 1.2rem;
+  gap: 1.5rem;
   position: relative;
-  min-height: 165px;
+  min-height: 175px;
   background: radial-gradient(ellipse at bottom, rgba(245, 158, 11, 0.08) 0%, rgba(15, 23, 42, 0) 70%);
   border-radius: var(--radius-sm);
-  padding: 0.6rem 0.8rem 0.2rem;
+  padding: 0.8rem 1rem 0;
   overflow: visible;
 }
 
@@ -727,20 +727,76 @@ body {
   65%, 75% { transform: translate(-2px, 0); }
 }
 
-/* Wobbly Missile & Silo */
+/* Wobbly Missile & Silo Structure */
 .missile-silo {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  height: 165px;
+  height: 175px;
+  width: 120px;
   cursor: pointer;
+  padding-bottom: 4px;
 }
 
+/* Red/Black Gantry Support Scaffold Tower (Left of Rocket) */
+.launch-gantry-scaffold {
+  position: absolute;
+  left: 4px;
+  bottom: 12px;
+  width: 22px;
+  height: 145px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.gantry-beam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #DC2626;
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(220, 38, 38, 0.4);
+}
+
+.left-beam { left: 0; }
+.right-beam { right: 0; }
+
+.gantry-cross {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #FBBF24;
+}
+
+.cross-1 { top: 30px; transform: rotate(35deg); }
+.cross-2 { top: 75px; transform: rotate(-35deg); }
+.cross-3 { top: 115px; transform: rotate(35deg); }
+
+.gantry-arm-clamp {
+  position: absolute;
+  top: 35px;
+  left: 18px;
+  width: 40px;
+  height: 6px;
+  background: repeating-linear-gradient(45deg, #F59E0B, #F59E0B 4px, #1E293B 4px, #1E293B 8px);
+  border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+  animation: clampBreathe 3s ease-in-out infinite;
+}
+
+@keyframes clampBreathe {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.94); }
+}
+
+/* Heavy Steel Base Platform Sitting Directly Below the Rocket */
 .silo-base-platform {
-  width: 100px;
-  height: 10px;
+  width: 105px;
+  height: 12px;
   background: repeating-linear-gradient(
     45deg,
     #F59E0B,
@@ -749,9 +805,11 @@ body {
     #1E293B 16px
   );
   border-radius: 4px;
-  border: 1px solid #475569;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  z-index: 1;
+  border: 1px solid #78350F;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  z-index: 3;
+  margin-top: -6px;
+  position: relative;
 }
 
 .wobbly-missile {
@@ -762,6 +820,7 @@ body {
   transform-origin: bottom center;
   animation: missileIdleWobble 2.8s infinite ease-in-out;
   transition: transform 0.2s ease;
+  margin-bottom: 2px;
 }
 
 @keyframes missileIdleWobble {
